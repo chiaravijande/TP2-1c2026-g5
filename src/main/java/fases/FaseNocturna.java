@@ -1,9 +1,7 @@
 package fases;
 
 import nocturno.ContextoNocturno;
-import nocturno.ResultadoNocturno;
 import partida.Partida;
-import fases.Fase;
 
 public class FaseNocturna extends Fase {
 
@@ -19,10 +17,7 @@ public class FaseNocturna extends Fase {
         partida.getJugadores()
                 .forEach(j -> j.realizarAccionNocturna(contexto));
 
-        ResultadoNocturno resultado = contexto.generarResultado();
-
-        resultado.aplicar(partida);
-        resultado.anunciar();
+        contexto.resolver(partida);
     }
 
     @Override
@@ -30,3 +25,4 @@ public class FaseNocturna extends Fase {
         return new FaseDiurna();
     }
 }
+

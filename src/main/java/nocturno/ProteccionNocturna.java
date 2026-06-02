@@ -4,18 +4,36 @@ import jugadores.Jugador;
 
 public class ProteccionNocturna {
 
-    private Jugador actor;
+    private Jugador protector;
     private Jugador protegido;
 
     public ProteccionNocturna(
-            Jugador actor,
+            Jugador protector,
             Jugador protegido
     ) {
-        this.actor = actor;
+        this.protector = protector;
         this.protegido = protegido;
     }
 
-    public boolean protegeA(Jugador jugador) {
-        return protegido.equals(jugador);
+    public ResultadoNocturno resolverAtaque(
+            AtaqueNocturno ataque
+    ) {
+
+        if (ataque.getVictima().equals(protegido)) {
+            return new ResultadoSinVictima();
+        }
+
+        return ataque.serResueltoSinProteccion();
+    }
+
+    public Jugador getProtector() {
+        return protector;
+    }
+
+    public Jugador getProtegido() {
+        return protegido;
     }
 }
+
+
+

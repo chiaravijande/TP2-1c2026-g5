@@ -4,18 +4,41 @@ import jugadores.Jugador;
 
 public class AtaqueNocturno {
 
-    private Jugador actor;
+    private Jugador atacante;
     private Jugador victima;
 
     public AtaqueNocturno(
-            Jugador actor,
+            Jugador atacante,
             Jugador victima
     ) {
-        this.actor = actor;
+        this.atacante = atacante;
         this.victima = victima;
     }
 
     public Jugador getVictima() {
         return victima;
     }
+
+    public Jugador getAtacante() {
+        return atacante;
+    }
+
+    public ResultadoNocturno resolverCon(
+            ProteccionNocturna proteccion
+    ) {
+
+        if (proteccion == null) {
+            return serResueltoSinProteccion();
+        }
+
+        return proteccion.resolverAtaque(this);
+    }
+
+    public ResultadoNocturno serResueltoSinProteccion() {
+        return new ResultadoConVictima(victima);
+    }
 }
+
+
+
+

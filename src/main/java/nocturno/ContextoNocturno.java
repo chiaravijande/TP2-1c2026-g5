@@ -1,7 +1,9 @@
 package nocturno;
 
-import java.util.List;
+import partida.Partida;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class ContextoNocturno {
 
@@ -30,16 +32,18 @@ public class ContextoNocturno {
         investigaciones.add(investigacion);
     }
 
-    public ResultadoNocturno generarResultado() {
+    public void resolver(Partida partida) {
 
-        if (proteccion != null &&
-                proteccion.protegeA(ataque.getVictima())) {
+        ResultadoNocturno resultado = generarResultado();
 
-            return new ResultadoSinVictima();
-        }
+        resultado.aplicar(partida);
+        resultado.anunciar();
+    }
 
-        return new ResultadoConVictima(
-                ataque.getVictima()
-        );
+    private ResultadoNocturno generarResultado() {
+        if (ataque == null) {
+            return new ResultadoSinVictima(); }
+        return ataque.resolverCon(proteccion);
     }
 }
+
