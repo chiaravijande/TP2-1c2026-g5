@@ -9,15 +9,14 @@ public class Detective extends RolCiudadano {
     @Override
     public void realizarAccion(
             ContextoNocturno contexto,
-            Jugador actor
+            Jugador actor,
+            Jugador objetivo
     ) {
-
-        Jugador investigado = null;
 
         Investigacion investigacion =
                 new Investigacion(
                         actor,
-                        investigado
+                        objetivo
                 );
 
         contexto.registrarInvestigacion(

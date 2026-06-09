@@ -3,23 +3,32 @@ package roles.mafia;
 import jugadores.Jugador;
 import nocturno.AtaqueNocturno;
 import nocturno.ContextoNocturno;
+import roles.Bando;
+import roles.Rol;
 
-public class Mafioso extends RolMafia {
+public class Mafioso extends Rol {
 
     @Override
     public void realizarAccion(
             ContextoNocturno contexto,
-            Jugador actor
+            Jugador actor,
+            Jugador objetivo
     ) {
-
-        Jugador victima = null;
 
         AtaqueNocturno ataque =
                 new AtaqueNocturno(
                         actor,
-                        victima
+                        objetivo
                 );
 
-        contexto.registrarAtaque(ataque);
+        contexto.registrarAtaque(
+                ataque
+        );
+    }
+
+    @Override
+    public Bando bando() {
+
+        return Bando.MAFIA;
     }
 }

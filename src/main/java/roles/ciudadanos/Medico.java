@@ -9,15 +9,14 @@ public class Medico extends RolCiudadano {
     @Override
     public void realizarAccion(
             ContextoNocturno contexto,
-            Jugador actor
+            Jugador actor,
+            Jugador objetivo
     ) {
-
-        Jugador protegido = null;
 
         ProteccionNocturna proteccion =
                 new ProteccionNocturna(
                         actor,
-                        protegido
+                        objetivo
                 );
 
         contexto.registrarProteccion(

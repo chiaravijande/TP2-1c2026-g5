@@ -9,7 +9,8 @@ public class EstadoMuerto extends EstadoJugador {
     @Override
     public void realizarAccionNocturna(
             Jugador jugador,
-            ContextoNocturno contexto
+            ContextoNocturno contexto,
+            Jugador objetivo
     ) {
         // no hace nada
     }

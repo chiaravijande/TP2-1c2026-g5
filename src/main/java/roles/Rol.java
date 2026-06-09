@@ -7,12 +7,13 @@ public abstract class Rol {
 
     public abstract void realizarAccion(
             ContextoNocturno contexto,
-            Jugador actor
+            Jugador actor,
+            Jugador objetivo
     );
 
-    public abstract String bando();
+    public abstract Bando bando();
 
-    public String aparienciaParaDetective() {
+    public Bando aparienciaParaDetective() {
         return bando();
     }
 }

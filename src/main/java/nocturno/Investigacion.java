@@ -1,6 +1,7 @@
 package nocturno;
 
 import jugadores.Jugador;
+import roles.Bando;
 
 public class Investigacion {
 
@@ -15,7 +16,7 @@ public class Investigacion {
         this.investigado = investigado;
     }
 
-    public String resultado() {
-        return investigado.getRol().bando();
+    public Bando resultado() {
+        return investigado.getRol().aparienciaParaDetective();
     }
 }

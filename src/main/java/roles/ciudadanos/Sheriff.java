@@ -14,7 +14,8 @@ public class Sheriff extends RolCiudadano {
     @Override
     public void realizarAccion(
             ContextoNocturno contexto,
-            Jugador actor
+            Jugador actor,
+            Jugador objetivo
     ) {
 
         // No tiene acción nocturna

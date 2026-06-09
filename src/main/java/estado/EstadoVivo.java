@@ -9,9 +9,14 @@ public class EstadoVivo extends EstadoJugador {
     @Override
     public void realizarAccionNocturna(
             Jugador jugador,
-            ContextoNocturno contexto
+            ContextoNocturno contexto,
+            Jugador objetivo
     ) {
-        jugador.getRol().realizarAccion(contexto, jugador);
+        jugador.getRol().realizarAccion(
+                contexto,
+                jugador,
+                objetivo
+        );
     }
 
     @Override

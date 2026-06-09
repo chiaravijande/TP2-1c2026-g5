@@ -15,7 +15,12 @@ public class FaseNocturna extends Fase {
     public void ejecutar(Partida partida) {
 
         partida.getJugadores()
-                .forEach(j -> j.realizarAccionNocturna(contexto));
+                .forEach(j ->
+                        j.realizarAccionNocturna(
+                                contexto,
+                                null
+                        )
+                );
 
         contexto.resolver(partida);
     }

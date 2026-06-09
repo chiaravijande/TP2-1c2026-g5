@@ -8,7 +8,8 @@ public abstract class EstadoJugador {
 
     public abstract void realizarAccionNocturna(
             Jugador jugador,
-            ContextoNocturno contexto
+            ContextoNocturno contexto,
+            Jugador objetivo
     );
 
     public abstract void votarEn(
@@ -16,7 +17,9 @@ public abstract class EstadoJugador {
             Votacion votacion
     );
 
-    public abstract void morir(Jugador jugador);
+    public abstract void morir(
+            Jugador jugador
+    );
 
     public abstract boolean estaVivo();
 }

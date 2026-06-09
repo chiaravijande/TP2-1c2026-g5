@@ -12,25 +12,42 @@ public class Jugador {
     private Rol rol;
     private EstadoJugador estado;
 
-    public Jugador(String nombre, Rol rol) {
+    public Jugador(
+            String nombre,
+            Rol rol
+    ) {
         this.nombre = nombre;
         this.rol = rol;
         this.estado = new EstadoVivo();
     }
 
-    public void realizarAccionNocturna(ContextoNocturno contexto) {
-        estado.realizarAccionNocturna(this, contexto);
+    public void realizarAccionNocturna(
+            ContextoNocturno contexto,
+            Jugador objetivo
+    ) {
+        estado.realizarAccionNocturna(
+                this,
+                contexto,
+                objetivo
+        );
     }
 
-    public void votarEn(Votacion votacion) {
-        estado.votarEn(this, votacion);
+    public void votarEn(
+            Votacion votacion
+    ) {
+        estado.votarEn(
+                this,
+                votacion
+        );
     }
 
     public void morir() {
         estado.morir(this);
     }
 
-    public void cambiarEstado(EstadoJugador nuevoEstado) {
+    public void cambiarEstado(
+            EstadoJugador nuevoEstado
+    ) {
         this.estado = nuevoEstado;
     }
 
