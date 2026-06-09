@@ -1,0 +1,75 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+hide footbox
+
+participant "partida: Partida" as Partida
+participant "fase: FaseNocturna" as Fase
+participant "contexto: ContextoNocturno" as Contexto
+participant "jugador1: Jugador" as Jugador1
+participant "estado: EstadoVivo" as Estado
+participant "rol: Mafioso" as Mafioso
+participant "ataque: AtaqueNocturno" as Ataque
+
+Partida -> Fase : ejecutar(partida)
+activate Fase
+
+Fase -> Contexto ** : new()
+
+note over Fase, Mafioso: 1. TURNO DE LA MAFIA\n(La Fase iteraría sobre todos los jugadores)
+
+Fase -> Jugador1 : ejecutarTurnoNocturno(contexto)
+activate Jugador1
+Jugador1 -> Estado : ejecutarTurnoNocturno(this, contexto)
+activate Estado
+Estado -> Mafioso : ejecutarAccionNocturna(contexto)
+activate Mafioso
+
+Mafioso -> Ataque ** : new(atacante, victima)
+Mafioso -> Contexto : registrarAtaque(ataque)
+
+Mafioso --> Estado
+deactivate Mafioso
+Estado --> Jugador1
+deactivate Estado
+Jugador1 --> Fase
+deactivate Jugador1
+
+note over Fase: (Se repite exactamente el mismo flujo\npara el Médico y el Detective)
+
+note over Fase, Ataque: 2. CIERRE Y RESOLUCIÓN
+
+Fase -> Contexto : generarResultado()
+activate Contexto
+Contexto -> Ataque : resolverCon(proteccion)
+activate Ataque
+Ataque --> Contexto : true (ej: ataque exitoso)
+deactivate Ataque
+
+alt Si el ataque fue exitoso
+    create "resultado: ResultadoConVictima" as ResV
+    Contexto -> ResV : new(victima)
+else Si el médico lo bloqueó
+    create "resultado: ResultadoSinVictima" as ResSV
+    Contexto -> ResSV : new()
+end
+
+Contexto --> Fase : resultado (ResultadoNocturno)
+deactivate Contexto
+
+Fase -> ResV : obtenerVictima()
+activate ResV
+ResV --> Fase : Optional<Jugador> (contiene a la victima)
+deactivate ResV
+
+alt Si el Optional NO está vacío
+    Fase -> Partida : eliminarJugador(victima)
+    activate Partida
+    Partida -> Jugador1 : eliminar()
+    note right of Jugador1: El Jugador cambia su estado\ninterno a EstadoMuerto.
+    deactivate Partida
+end
+
+Fase --> Partida
+deactivate Fase
+@enduml
