@@ -1,0 +1,264 @@
+@startuml Mafia
+
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+skinparam svgDimensionStyle false
+
+class Partida {
+    - rondaActual : int
+    + iniciarPartida() : void
+    + avanzar() : void
+    + verificarVictoria() : ResultadoPartida
+    + eliminarJugador(jugador : Jugador) : void
+}
+
+class ContadorDeBandos {
+    - cantMafiosos : int
+    - cantCiudadanos : int
+    + contarMafioso() : void
+    + contarCiudadano() : void
+    + evaluarCondicion() : ResultadoPartida
+}
+
+abstract class ResultadoPartida {
+    + {abstract} anunciar() : String
+    + {abstract} esTerminal() : boolean
+}
+
+class GanaMafia {
+    + anunciar() : String
+    + esTerminal() : boolean
+}
+
+class GanaCiudadanos {
+    + anunciar() : String
+    + esTerminal() : boolean
+}
+
+class PartidaEnCurso {
+    + anunciar() : String
+    + esTerminal() : boolean
+}
+
+class Mazo {
+    + Mazo(config : ConfiguracionMazo)
+    + repartir(jugadores : List<Jugador>) : void
+}
+
+class ConfiguracionMazo {
+    + generarRoles(cantJugadores : int) : List<Rol>
+}
+
+abstract class Fase {
+    + {abstract} ejecutar(partida : Partida) : void
+    + {abstract} siguienteFase() : Fase
+}
+
+class FaseNocturna {
+    + ejecutar(partida : Partida) : void
+    + siguienteFase() : Fase
+}
+
+class FaseDiurna {
+    + ejecutar(partida : Partida) : void
+    + siguienteFase() : Fase
+}
+
+interface MecanismoEmpate {
+    + resolver(empatados : List<Jugador>, votacion : Votacion) : Optional<Jugador>
+}
+
+class MecanismoBallotage {
+    + resolver(empatados : List<Jugador>, votacion : Votacion) : Optional<Jugador>
+}
+
+class MecanismoSinEliminacion {
+    + resolver(empatados : List<Jugador>, votacion : Votacion) : Optional<Jugador>
+}
+
+class Jugador {
+    - nombre : String
+    + ejecutarTurnoNocturno(contexto : ContextoNocturno) : void
+    + ejecutarTurnoDiurno(partida : Partida) : void
+    + votarEn(votacion : Votacion) : void
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + eliminar() : void
+    + estaVivo() : boolean
+}
+
+abstract class EstadoJugador {
+    + {abstract} ejecutarTurnoNocturno(jugador : Jugador, contexto : ContextoNocturno) : void
+    + {abstract} ejecutarTurnoDiurno(jugador : Jugador, partida : Partida) : void
+    + {abstract} votarEn(jugador : Jugador, votacion : Votacion) : void
+    + {abstract} agruparseEn(jugador : Jugador, contador : ContadorDeBandos) : void
+    + {abstract} eliminar(jugador : Jugador) : void
+}
+
+class EstadoVivo {
+    + ejecutarTurnoNocturno(jugador : Jugador, contexto : ContextoNocturno) : void
+    + ejecutarTurnoDiurno(jugador : Jugador, partida : Partida) : void
+    + votarEn(jugador : Jugador, votacion : Votacion) : void
+    + agruparseEn(jugador : Jugador, contador : ContadorDeBandos) : void
+    + eliminar(jugador : Jugador) : void
+}
+
+class EstadoMuerto {
+    + ejecutarTurnoNocturno(jugador : Jugador, contexto : ContextoNocturno) : void
+    + ejecutarTurnoDiurno(jugador : Jugador, partida : Partida) : void
+    + votarEn(jugador : Jugador, votacion : Votacion) : void
+    + agruparseEn(jugador : Jugador, contador : ContadorDeBandos) : void
+    + eliminar(jugador : Jugador) : void
+}
+
+abstract class Rol {
+    + {abstract} agruparseEn(contador : ContadorDeBandos) : void
+    + {abstract} esSospechoso() : boolean
+}
+
+interface RolNocturno {
+    + ejecutarAccionNocturna(contexto : ContextoNocturno) : void
+}
+
+interface RolDiurno {
+    + ejecutarAccionDiurna(partida : Partida) : void
+}
+
+class Ciudadano {
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + esSospechoso() : boolean
+}
+
+class Mafioso {
+    + ejecutarAccionNocturna(contexto : ContextoNocturno) : void
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + esSospechoso() : boolean
+}
+
+class Padrino {
+    + esSospechoso() : boolean <<override>>
+}
+
+class Detective {
+    - ultimoInvestigado : Jugador
+    + ejecutarAccionNocturna(contexto : ContextoNocturno) : void
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + esSospechoso() : boolean
+}
+
+class Medico {
+    - ultimoProtegido : Jugador
+    + ejecutarAccionNocturna(contexto : ContextoNocturno) : void
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + esSospechoso() : boolean
+}
+
+class Sheriff {
+    - yaSeRevelo : boolean
+    + ejecutarAccionDiurna(partida : Partida) : void
+    + agruparseEn(contador : ContadorDeBandos) : void
+    + esSospechoso() : boolean
+}
+
+class ContextoNocturno {
+    + registrarAtaque(ataque : AtaqueNocturno) : void
+    + registrarProteccion(proteccion : ProteccionNocturna) : void
+    + registrarInvestigacion(inv : ResultadoInvestigacion) : void
+    + generarResultado() : ResultadoNocturno
+}
+
+class AtaqueNocturno {
+    - atacante : Jugador
+    - victima : Jugador
+    + resolverCon(proteccion : ProteccionNocturna) : boolean
+}
+
+class ProteccionNocturna {
+    - protegido : Jugador
+    - protector : Jugador
+    + protege(ataque : AtaqueNocturno) : boolean
+}
+
+class ResultadoInvestigacion {
+    - investigado : Jugador
+    - inocente : boolean
+    + pareceInocente() : boolean
+}
+
+abstract class ResultadoNocturno {
+    + {abstract} obtenerVictima() : Optional<Jugador>
+}
+
+class ResultadoConVictima {
+    - victima : Jugador
+    + obtenerVictima() : Optional<Jugador>
+}
+
+class ResultadoSinVictima {
+    + obtenerVictima() : Optional<Jugador>
+}
+
+class Votacion {
+    - votos : Map<Jugador,Jugador>
+    + registrarVoto(votante : Jugador, votado : Jugador) : void
+    + registrarAbstencion(votante : Jugador) : void
+    + calcularResultado() : ResultadoVotacion
+}
+
+class ResultadoVotacion {
+    - expulsado : Optional<Jugador>
+    + obtenerExpulsado() : Optional<Jugador>
+}
+
+Partida "1" --> "5.." Jugador
+Partida "1" *--> "1" Mazo
+Partida "1" o--> "1" Fase
+Partida ..> ResultadoPartida
+Partida ..> ContadorDeBandos
+
+Fase <|-- FaseNocturna
+Fase <|-- FaseDiurna
+FaseNocturna *--> ContextoNocturno
+FaseDiurna *--> Votacion
+FaseDiurna o--> MecanismoEmpate
+
+ResultadoPartida <|-- GanaMafia
+ResultadoPartida <|-- GanaCiudadanos
+ResultadoPartida <|-- PartidaEnCurso
+
+ContadorDeBandos ..> ResultadoPartida
+
+Mazo "1" *--> "1" ConfiguracionMazo
+
+MecanismoEmpate <|.. MecanismoBallotage
+MecanismoEmpate <|.. MecanismoSinEliminacion
+
+Jugador *--> Rol
+Jugador *--> EstadoJugador
+EstadoJugador <|-- EstadoVivo
+EstadoJugador <|-- EstadoMuerto
+
+Rol <|-- Ciudadano
+Rol <|-- Mafioso
+Mafioso <|-- Padrino
+Rol <|-- Detective
+Rol <|-- Medico
+Rol <|-- Sheriff
+
+RolNocturno <|.. Mafioso
+RolNocturno <|.. Detective
+RolNocturno <|.. Medico
+RolDiurno <|.. Sheriff
+
+ContextoNocturno --> "0.." AtaqueNocturno
+ContextoNocturno --> "0.." ProteccionNocturna
+ContextoNocturno --> "0.." ResultadoInvestigacion
+ContextoNocturno ..> ResultadoNocturno
+
+ResultadoNocturno <|-- ResultadoConVictima
+ResultadoNocturno <|-- ResultadoSinVictima
+
+Votacion ..> ResultadoVotacion
+
+@enduml
