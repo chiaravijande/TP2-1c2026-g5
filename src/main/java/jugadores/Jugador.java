@@ -1,9 +1,10 @@
 package jugadores;
 
-import estado.EstadoJugador;
-import estado.EstadoVivo;
-import nocturno.ContextoNocturno;
+import estado.*;
 import roles.Rol;
+import nocturno.RegistroNocturno;
+import partida.Partida;
+import partida.ContadorDeBandos;
 import votacion.Votacion;
 
 public class Jugador {
@@ -12,54 +13,45 @@ public class Jugador {
     private Rol rol;
     private EstadoJugador estado;
 
-    public Jugador(
-            String nombre,
-            Rol rol
-    ) {
+
+    public Jugador(String nombre) {
         this.nombre = nombre;
-        this.rol = rol;
         this.estado = new EstadoVivo();
     }
 
-    public void realizarAccionNocturna(
-            ContextoNocturno contexto,
-            Jugador objetivo
-    ) {
-        estado.realizarAccionNocturna(
-                this,
-                contexto,
-                objetivo
-        );
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
 
-    public void votarEn(
-            Votacion votacion
-    ) {
-        estado.votarEn(
-                this,
-                votacion
-        );
+    public void ejecutarTurnoNocturno(RegistroNocturno contexto) {
+        this.estado.ejecutarTurnoNocturno(this, contexto);
     }
 
-    public void morir() {
-        estado.morir(this);
+    public void ejecutarTurnoDiurno(Partida partida) {
+        this.estado.ejecutarTurnoDiurno(this, partida);
     }
 
-    public void cambiarEstado(
-            EstadoJugador nuevoEstado
-    ) {
-        this.estado = nuevoEstado;
+    public void votarEn(Votacion votacion) {
+        this.estado.votarEn(this, votacion);
     }
 
-    public Rol getRol() {
-        return rol;
+    public void agruparseEn(ContadorDeBandos contador) {
+        this.estado.agruparseEn(this, contador);
     }
 
-    public String getNombre() {
-        return nombre;
+    public void eliminar() {
+        this.estado.eliminar(this);
     }
 
     public boolean estaVivo() {
-        return estado.estaVivo();
+        return this.estado instanceof EstadoVivo;
+    }
+
+    public Rol getRol() {
+        return this.rol;
+    }
+
+    public void cambiarEstado(EstadoJugador nuevoEstado) {
+        this.estado = nuevoEstado;
     }
 }

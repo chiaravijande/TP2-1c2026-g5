@@ -1,42 +1,42 @@
 package roles.ciudadanos;
 
-import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import partida.Partida;
+import partida.ContadorDeBandos;
 
-public class Sheriff extends RolCiudadano {
+public class Sheriff extends roles.RolCiudadano implements roles.RolDiurno {
 
     private boolean yaSeRevelo;
 
+    // el Sheriff arranca con su identidad oculta
     public Sheriff() {
         this.yaSeRevelo = false;
     }
 
     @Override
-    public void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    ) {
+    public void ejecutarAccionDiurna(Partida partida) {
 
-        // No tiene acción nocturna
+        // Solo puede revelarse una vez por partida
+        if (!this.yaSeRevelo) {
 
+            // Se marca como revelado
+            this.yaSeRevelo = true;
+
+            // Acá más adelante la interfaz o la partida
+            // podrían anunciar públicamente que este jugador es Sheriff.
+        }
     }
 
-    public void revelarInvestigacion(
-            String resultado
-    ) {
+    public boolean estaRevelado() {
+        return this.yaSeRevelo;
+    }
 
-        if (yaSeRevelo) {
+    @Override
+    public void agruparseEn(ContadorDeBandos contador) {
+        contador.contarCiudadano();
+    }
 
-            throw new RuntimeException(
-                    "El sheriff ya usó su habilidad."
-            );
-        }
-
-        System.out.println(
-                "Sheriff revela: " + resultado
-        );
-
-        yaSeRevelo = true;
+    @Override
+    public boolean esSospechoso() {
+        return false;
     }
 }

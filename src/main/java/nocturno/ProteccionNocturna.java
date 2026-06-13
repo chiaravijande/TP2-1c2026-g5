@@ -4,34 +4,19 @@ import jugadores.Jugador;
 
 public class ProteccionNocturna {
 
-    private Jugador protector;
     private Jugador protegido;
+    private Jugador protector;
 
-    public ProteccionNocturna(
-            Jugador protector,
-            Jugador protegido
-    ) {
-        this.protector = protector;
+    //el constructor recibe al jugador que recibio la proteccion del medico, y el propio medico
+    public ProteccionNocturna(Jugador protegido, Jugador protector) {
         this.protegido = protegido;
+        this.protector = protector;
     }
 
-    public ResultadoNocturno resolverAtaque(
-            AtaqueNocturno ataque
-    ) {
-
-        if (ataque.getVictima().equals(protegido)) {
-            return new ResultadoSinVictima();
-        }
-
-        return ataque.serResueltoSinProteccion();
-    }
-
-    public Jugador getProtector() {
-        return protector;
-    }
-
-    public Jugador getProtegido() {
-        return protegido;
+    //verifica si la proteccion funciono
+    public boolean protege(AtaqueNocturno ataque) {
+        // Compara si el jugador atacado es el mismo que el protegido
+        return ataque.getVictima().equals(this.protegido);
     }
 }
 

@@ -1,19 +1,24 @@
 package roles;
 
 import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import partida.ContadorDeBandos;
 
 public abstract class Rol {
 
-    public abstract void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    );
+    protected Jugador objetivo;
 
-    public abstract Bando bando();
-
-    public Bando aparienciaParaDetective() {
-        return bando();
+    // el jugador (la interfaz/consola) le asigne a quién va a apuntar en su turno
+    public void setObjetivo(Jugador objetivo) {
+        this.objetivo = objetivo;
     }
+
+    //cada rol sabe a que contador llamar
+    public abstract void agruparseEn(ContadorDeBandos contador);
+
+    //como lo ve el detective
+    public abstract boolean esSospechoso();
+
+
+    //valor del enum correspondiente.
+    public abstract Bando bando();
 }
