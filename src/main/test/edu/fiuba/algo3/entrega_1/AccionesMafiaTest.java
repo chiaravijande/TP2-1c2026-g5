@@ -7,7 +7,7 @@ import partida.*;
 import fases.*;
 import nocturno.*;
 import jugadores.*;
-import roles.Mafioso;
+import roles.mafia.Mafioso;
 
 public class AccionesMafiaTest {
 

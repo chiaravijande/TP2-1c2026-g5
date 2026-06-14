@@ -1,6 +1,6 @@
 package roles.mafia;
 
-public class Padrino extends roles.Mafioso {
+public class Padrino extends Mafioso {
     // el Padrino (jefe de la mafia) tiene el poder pasivo de engañar al Detective.
 
     @Override

@@ -2,7 +2,7 @@ package mazo;
 
 import roles.Rol;
 import roles.ciudadanos.Ciudadano;
-import roles.Mafioso;
+import roles.mafia.Mafioso;
 
 import java.util.ArrayList;
 import java.util.List;

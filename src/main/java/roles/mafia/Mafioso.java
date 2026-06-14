@@ -1,10 +1,11 @@
-package roles;
+package roles.mafia;
 
 import nocturno.AtaqueNocturno;
 import nocturno.RegistroNocturno;
 import partida.ContadorDeBandos;
+import roles.Bando;
 
-public class Mafioso extends Rol implements RolNocturno {
+public class Mafioso extends roles.Rol implements roles.RolNocturno {
 
     @Override
     public void ejecutarAccionNocturna(RegistroNocturno contexto) {

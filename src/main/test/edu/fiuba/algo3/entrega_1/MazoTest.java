@@ -10,7 +10,7 @@ import roles.ciudadanos.Ciudadano;
 import roles.ciudadanos.Detective;
 import roles.ciudadanos.Medico;
 import roles.ciudadanos.Sheriff;
-import roles.Mafioso;
+import roles.mafia.Mafioso;
 import roles.mafia.Padrino;
 
 import org.junit.jupiter.api.Test;
@@ -139,9 +139,7 @@ public class MazoTest {
 
         List<Jugador> jugadores = jugadoresMock(10);
 
-        Mazo mazo = new Mazo(
-                ConfiguracionMazo.para(10),
-                mezclador);
+        Mazo mazo = new Mazo(ConfiguracionMazo.para(10), mezclador);
         // Act
         mazo.repartir(jugadores);
         // Assert
