@@ -1,7 +1,7 @@
 package roles.ciudadanos;
 
-import nocturno.ProteccionNocturna;
 import nocturno.RegistroNocturno;
+import nocturno.ProteccionNocturna;
 import partida.ContadorDeBandos;
 import jugadores.Jugador;
 
@@ -19,7 +19,7 @@ public class Medico extends roles.RolCiudadano implements roles.RolNocturno {
 
             // Regla opcional del juego (por si la piden): No proteger al mismo dos veces seguidas
             if (!objetivo.equals(ultimoProtegido)) {
-                ProteccionNocturna proteccion = new ProteccionNocturna(null, objetivo);
+                ProteccionNocturna proteccion = new ProteccionNocturna(objetivo, null);
                 contexto.registrarProteccion(proteccion);
                 this.ultimoProtegido = objetivo;
             }
