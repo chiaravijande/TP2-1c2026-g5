@@ -27,6 +27,3 @@ public class AtaqueNocturno {
         return this.victima;
     }
 }
-
-
-
