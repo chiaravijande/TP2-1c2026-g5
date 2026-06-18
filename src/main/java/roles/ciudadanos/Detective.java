@@ -4,21 +4,27 @@ import jugadores.Jugador;
 import nocturno.RegistroNocturno;
 import nocturno.ResultadoInvestigacion;
 import partida.ContadorDeBandos;
+import roles.RolCiudadano;
+import roles.RolNocturno;
 
-public class Detective extends roles.RolCiudadano implements roles.RolNocturno {
+public class Detective extends RolCiudadano implements RolNocturno {
 
     private Jugador ultimoInvestigado;
 
     @Override
     public void ejecutarAccionNocturna(RegistroNocturno contexto) {
         if (this.objetivo != null) {
-            // Le pregunta al rol del objetivo si es sospechoso (El Padrino mentirá, el Mafioso dirá la verdad)
+
+            if (this.objetivo.equals(this.ultimoInvestigado)) {
+                return; 
+            }
+
             boolean esSospechoso = this.objetivo.getRol().esSospechoso();
 
-            // Creamos el resultado de la investigación (invirtiendo el booleano porque la clase pide 'inocente')
             ResultadoInvestigacion investigacion = new ResultadoInvestigacion(this.objetivo, !esSospechoso);
 
             contexto.registrarInvestigacion(investigacion);
+
             this.ultimoInvestigado = this.objetivo;
         }
     }
