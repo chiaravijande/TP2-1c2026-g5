@@ -6,6 +6,8 @@ import partida.Partida;
 import partida.ContadorDeBandos;
 import votacion.Votacion;
 
+import java.util.List;
+
 public class EstadoMuerto extends EstadoJugador {
 
     @Override
@@ -31,5 +33,9 @@ public class EstadoMuerto extends EstadoJugador {
     @Override
     public void eliminar(Jugador jugador) {
         // No hace nada. Ya está muerto.
+    }
+    @Override
+    public void votarEnBallotage(Jugador jugador, Votacion votacion, List<Jugador> candidatos) {
+        //no hace nada. los jugadores muertos no participan.
     }
 }

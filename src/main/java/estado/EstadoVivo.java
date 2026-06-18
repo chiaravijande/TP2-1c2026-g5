@@ -8,6 +8,8 @@ import votacion.Votacion;
 import roles.RolNocturno;
 import roles.RolDiurno;
 
+import java.util.List;
+
 public class EstadoVivo extends EstadoJugador {
 
     @Override
@@ -29,7 +31,6 @@ public class EstadoVivo extends EstadoJugador {
     @Override
     public void votarEn(Jugador jugador, Votacion votacion) {
         // Un jugador vivo vota normalmente.
-        // (La lógica de a quién vota depende de cómo armen la Votación en su TP)
     }
 
     @Override
@@ -43,5 +44,21 @@ public class EstadoVivo extends EstadoJugador {
         //el jugador deja de estar vivo y pasa a estar muerto.
         // Requiere que Jugador tenga el metodo cambiarEstado().
         jugador.cambiarEstado(new EstadoMuerto());
+    }
+    @Override
+    public void votarEnBallotage(Jugador jugador, Votacion votacion, List<Jugador> candidatos) {
+        //, acá se le pediría al usuario que elija uno de los jugadores dentro de la lista 'candidatos'.
+
+        //la interfaz nos pasa un 'jugadorElegido'.La validacion que debemos hacer seria:
+
+        /* Jugador jugadorElegido = ... // (viene de la interfaz grafica)
+
+        if (candidatos.contains(jugadorElegido)) {
+            votacion.registrarVoto(jugador, jugadorElegido);
+        } else {
+            // Si intenta votar a alguien que no está en el ballotage, podemos tomarlo como una abstención o rechazar la acción.
+            votacion.registrarAbstencion(jugador);
+        }
+        */
     }
 }

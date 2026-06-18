@@ -6,6 +6,8 @@ import partida.Partida;
 import partida.ContadorDeBandos;
 import votacion.Votacion;
 
+import java.util.List;
+
 public abstract class EstadoJugador {
 
     public abstract void ejecutarTurnoNocturno(Jugador jugador, RegistroNocturno contexto);
@@ -18,4 +20,5 @@ public abstract class EstadoJugador {
 
     public abstract void eliminar(Jugador jugador);
 
+    public abstract void votarEnBallotage(Jugador jugador, Votacion votacion, List<Jugador> candidatos);
 }
