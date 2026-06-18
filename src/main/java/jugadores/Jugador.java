@@ -7,6 +7,9 @@ import partida.Partida;
 import partida.ContadorDeBandos;
 import votacion.Votacion;
 
+import java.util.List;
+import java.util.Optional;
+
 public class Jugador {
 
     private String nombre;
@@ -53,5 +56,16 @@ public class Jugador {
 
     public void cambiarEstado(EstadoJugador nuevoEstado) {
         this.estado = nuevoEstado;
+    }
+
+    public void votarEnBallotage(Votacion votacion, List<Jugador> candidatos) {
+        this.estado.votarEnBallotage(this, votacion, candidatos);
+    }
+
+    public Optional<Rol> obtenerRolRevelado() {
+        if (!this.estaVivo()) {
+            return Optional.of(this.rol);
+        }
+        return Optional.empty();
     }
 }
