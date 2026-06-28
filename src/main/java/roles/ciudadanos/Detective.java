@@ -7,30 +7,17 @@ import partida.ContadorDeBandos;
 import roles.RolCiudadano;
 import roles.RolNocturno;
 
-public class Detective extends RolCiudadano implements RolNocturno {
-
-    private Jugador ultimoInvestigado;
+public class Detective extends Investigador {
 
     @Override
-    public void ejecutarAccionNocturna(RegistroNocturno contexto) {
-        if (this.objetivo != null) {
-
-            if (this.objetivo.equals(this.ultimoInvestigado)) {
-                return; 
-            }
-
-            boolean esSospechoso = this.objetivo.getRol().esSospechoso();
-
-            ResultadoInvestigacion investigacion = new ResultadoInvestigacion(this.objetivo, !esSospechoso);
-
-            contexto.registrarInvestigacion(investigacion);
-
-            this.ultimoInvestigado = this.objetivo;
-        }
+    public String nombre() {
+        return "Detective";
     }
 
     @Override
-    public void agruparseEn(ContadorDeBandos contador) {
+    public void agruparseEn(
+            ContadorDeBandos contador) {
+
         contador.contarCiudadano();
     }
 

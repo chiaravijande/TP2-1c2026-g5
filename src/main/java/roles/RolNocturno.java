@@ -1,7 +1,14 @@
 package roles;
 
-import nocturno.RegistroNocturno;
+import jugadores.Jugador;
+import nocturno.AccionNocturna;
+
+import java.util.Optional;
 
 public interface RolNocturno {
-    void ejecutarAccionNocturna(RegistroNocturno contexto);
+
+    Optional<AccionNocturna> prepararAccion(
+            Jugador actor,
+            Optional<Jugador> objetivo
+    );
 }

@@ -1,44 +1,45 @@
 package roles.ciudadanos;
 
-import nocturno.RegistroNocturno;
+import jugadores.Jugador;
+import nocturno.AccionNocturna;
 import nocturno.ProteccionNocturna;
 import partida.ContadorDeBandos;
-import jugadores.Jugador;
 import roles.RolCiudadano;
-import roles.RolNocturno;
 
-public class Medico extends RolCiudadano implements RolNocturno {
+import java.util.Optional;
+
+public class Medico extends RolCiudadano {
 
     private Jugador ultimoProtegido;
 
     @Override
-    public void ejecutarAccionNocturna(RegistroNocturno contexto) {
+    public String nombre() {
+        return "Médico";
+    }
+    
+    @Override
+    public Optional<AccionNocturna> prepararAccion(
+            Jugador actor,
+            Optional<Jugador> objetivo) {
 
-        //valida que haya un objetivo y siga vivo
-        if (this.objetivo == null || !this.objetivo.estaVivo()) {
-            return;
-        }
-
-        //valida que no se protega al mismo jugador dos noches seguidas
-        if (this.objetivo.equals(this.ultimoProtegido)) {
-            return; //corta la ejecucion, la protección se rechaza
-        }
-
-        //creamos y registramos la protección
-        ProteccionNocturna proteccion = new ProteccionNocturna(this.objetivo, null);
-        contexto.registrarProteccion(proteccion);
-
-        //actualizamos el historial
-        this.ultimoProtegido = this.objetivo;
+        return objetivo.flatMap(jugador -> {
+            if (jugador == ultimoProtegido) {
+                return Optional.empty();
+            }
+            ultimoProtegido = jugador;
+            return Optional.of(new ProteccionNocturna(jugador));
+        });
     }
 
     @Override
-    public void agruparseEn(ContadorDeBandos contador) {
+    public void agruparseEn(
+            ContadorDeBandos contador) {
+
         contador.contarCiudadano();
     }
 
     @Override
     public boolean esSospechoso() {
-        return false; // Es un ciudadano inocente
+        return false;
     }
 }

@@ -1,0 +1,29 @@
+package roles.ciudadanos;
+
+import jugadores.Jugador;
+import nocturno.AccionNocturna;
+import nocturno.ResultadoInvestigacion;
+import roles.RolCiudadano;
+
+import java.util.Optional;
+
+public abstract class Investigador
+        extends RolCiudadano {
+
+    private Jugador ultimoInvestigado;
+
+    @Override
+    public Optional<AccionNocturna> prepararAccion(
+            Jugador actor,
+            Optional<Jugador> objetivo) {
+
+        return objetivo.flatMap(jugador -> {
+            if (jugador == ultimoInvestigado) {
+                return Optional.empty();
+            }
+            ultimoInvestigado = jugador;
+            return Optional.of(new ResultadoInvestigacion(actor, jugador));
+        });
+    }
+}
+
