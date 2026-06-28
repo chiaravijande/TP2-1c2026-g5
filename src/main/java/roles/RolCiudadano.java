@@ -1,8 +1,17 @@
 package roles;
 
 public abstract class RolCiudadano extends Rol {
+
     @Override
-    public Bando bando() {
-        return Bando.CIUDADANOS;
+    public boolean esCiudadano() {
+        return true;
+    }
+
+    @Override
+    public boolean esAliadoDe(
+            Rol otro) {
+
+        return otro.esCiudadano();
     }
 }
+

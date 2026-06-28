@@ -1,24 +1,50 @@
 package roles;
 
 import jugadores.Jugador;
+import nocturno.AccionNocturna;
 import partida.ContadorDeBandos;
+
+import java.util.Optional;
 
 public abstract class Rol {
 
-    protected Jugador objetivo;
-
-    // el jugador (la interfaz/consola) le asigne a quién va a apuntar en su turno
-    public void setObjetivo(Jugador objetivo) {
-        this.objetivo = objetivo;
+    public String nombre() {
+        return "Rol";
     }
 
-    //cada rol sabe a que contador llamar
-    public abstract void agruparseEn(ContadorDeBandos contador);
+    public Optional<AccionNocturna> prepararAccion(
+            Jugador actor,
+            Optional<Jugador> objetivo) {
 
-    //como lo ve el detective
+        return Optional.empty();
+    }
+
+    public abstract void agruparseEn(
+            ContadorDeBandos contador);
+
     public abstract boolean esSospechoso();
 
+    public boolean esMafia() {
+        return false;
+    }
 
-    //valor del enum correspondiente.
-    public abstract Bando bando();
+    public boolean esCiudadano() {
+        return false;
+    }
+
+    public abstract boolean esAliadoDe(
+            Rol otro
+    );
+
+    public boolean revelaInformacion() {
+        return false;
+    }
+
+    public String investigar(Jugador objetivo) {
+        return "";
+    }
+
+    public boolean tieneAccionNocturna() {
+        return false;
+    }
 }

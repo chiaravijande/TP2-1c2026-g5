@@ -1,66 +1,69 @@
 package votacion;
 
 import jugadores.Jugador;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Votacion {
 
-    //guarda quien vota a quien
     private Map<Jugador, Jugador> votos;
+    private List<Jugador> empatados;
 
     public Votacion() {
         this.votos = new HashMap<>();
+        this.empatados = new ArrayList<>();
     }
 
     public void registrarVoto(Jugador votante, Jugador votado) {
+        //valida que las nominaciones solo incluyen a jugadores vivos
+        if (votado != null && !votado.estaVivo()) {
+            return; //se rechaza el voto a un jugador muerto
+        }
         this.votos.put(votante, votado);
     }
-
 
     public void registrarAbstencion(Jugador votante) {
         this.votos.put(votante, null);
     }
 
-    //determina quien tiene mas votos. si hay un empate devuelve un optional vacio (para que actue el mecanismo de empate)
     public ResultadoVotacion calcularResultado() {
-        if (this.votos.isEmpty()) {
-            return new ResultadoVotacion(Optional.empty());
-        }
-        //contamos votos por jugador
-        Map<Jugador, Integer> conteo = new HashMap<>();
+        if (this.votos.isEmpty()) return new ResultadoVotacion(Optional.empty());
 
+        Map<Jugador, Integer> conteo = new HashMap<>();
         for (Jugador votado : this.votos.values()) {
-            if (votado != null) { // Ignoramos las abstenciones
+            if (votado != null) {
                 conteo.put(votado, conteo.getOrDefault(votado, 0) + 1);
             }
         }
 
-        //buscamos el mas votado
-        Jugador masVotado = null;
         int maxVotos = 0;
-        boolean hayEmpate = false;
+        this.empatados.clear();
 
+        //encontramos la cantidad maxima de votos y quienes son los mas votados
         for (Map.Entry<Jugador, Integer> entrada : conteo.entrySet()) {
             int cantidadVotos = entrada.getValue();
             Jugador candidato = entrada.getKey();
 
             if (cantidadVotos > maxVotos) {
-                masVotado = candidato;
                 maxVotos = cantidadVotos;
-                hayEmpate = false; // Hay un nuevo líder claro
+                this.empatados.clear();
+                this.empatados.add(candidato);
             } else if (cantidadVotos == maxVotos) {
-                hayEmpate = true; // Alguien empató con el líder
+                this.empatados.add(candidato);
             }
         }
 
-        //devolvemos el resultado o si hay empate no se expulsa directamente a nadie
-        if (hayEmpate || masVotado == null) {
+        // Si hay más de un jugador con la cantidad máxima de votos, es empate
+        if (this.empatados.size() > 1 || this.empatados.isEmpty()) {
             return new ResultadoVotacion(Optional.empty());
         }
 
-        //si hay un ganador lo devolvemos encapsulado
-        return new ResultadoVotacion(Optional.of(masVotado));
+        return new ResultadoVotacion(Optional.of(this.empatados.get(0)));
+    }
+
+    public List<Jugador> obtenerEmpatados() {
+        return this.empatados;
+    }
+    public Set<Jugador> obtenerVotantes() {
+        return this.votos.keySet();
     }
 }

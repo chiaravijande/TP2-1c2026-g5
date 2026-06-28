@@ -5,6 +5,11 @@ import partida.ContadorDeBandos;
 public class Ciudadano extends roles.RolCiudadano {
 
     @Override
+    public String nombre() {
+        return "Ciudadano";
+    }
+
+    @Override
     public void agruparseEn(ContadorDeBandos contador) {
         contador.contarCiudadano();
     }
