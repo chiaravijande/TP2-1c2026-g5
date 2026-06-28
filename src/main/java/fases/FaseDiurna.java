@@ -15,7 +15,6 @@ public class FaseDiurna extends Fase {
     private MecanismoEmpate mecanismoEmpate;
 
     public FaseDiurna() {
-        //por defecto, sin eliminación, pero se puede settear otro (Ballotage)
         this.mecanismoEmpate = new MecanismoSinEliminacion();
     }
 
@@ -39,7 +38,6 @@ public class FaseDiurna extends Fase {
         ResultadoVotacion resultado = votacion.calcularResultado();
         Optional<Jugador> expulsado = resultado.obtenerExpulsado();
 
-        //integramos el empate
         if (expulsado.isEmpty()) {
             List<Jugador> empatados = votacion.obtenerEmpatados();
             if (empatados.size() > 1) {
@@ -55,7 +53,21 @@ public class FaseDiurna extends Fase {
     }
 
     @Override
-    public Fase siguienteFase() {
+    public Fase siguienteFase(
+            Partida partida
+    ) {
+        ResultadoPartida resultado =
+                partida.verificarVictoria();
+
+        if (resultado.esTerminal()) {
+            return new FaseFinal(resultado);
+        }
+
         return new FaseNocturna();
+    }
+
+    @Override
+    public boolean iniciaNuevaRonda() {
+        return true;
     }
 }

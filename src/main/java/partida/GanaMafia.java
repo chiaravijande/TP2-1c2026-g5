@@ -13,3 +13,4 @@ public class GanaMafia extends ResultadoPartida {
         return true;
     }
 }
+
