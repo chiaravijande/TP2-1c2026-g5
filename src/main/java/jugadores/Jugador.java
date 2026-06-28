@@ -1,10 +1,11 @@
 package jugadores;
 
 import estado.*;
-import roles.Rol;
+import nocturno.AccionNocturna;
 import nocturno.RegistroNocturno;
-import partida.Partida;
 import partida.ContadorDeBandos;
+import partida.Partida;
+import roles.*;
 import votacion.Votacion;
 
 import java.util.List;
@@ -15,57 +16,120 @@ public class Jugador {
     private String nombre;
     private Rol rol;
     private EstadoJugador estado;
+    private Optional<Jugador> objetivoNocturno = Optional.empty();
 
-
-    public Jugador(String nombre) {
+    public Jugador(String nombre, Rol rol) {
         this.nombre = nombre;
+        this.rol = rol;
         this.estado = new EstadoVivo();
     }
 
-    public void setRol(Rol rol) {
-        this.rol = rol;
+    public Rol getRol() {
+        return rol;
     }
 
-    public void ejecutarTurnoNocturno(RegistroNocturno contexto) {
-        this.estado.ejecutarTurnoNocturno(this, contexto);
+    public String getNombre() {
+        return nombre;
     }
 
-    public void ejecutarTurnoDiurno(Partida partida) {
-        this.estado.ejecutarTurnoDiurno(this, partida);
+    public void ejecutarTurnoNocturno(
+            RegistroNocturno contexto
+    ) {
+        estado.ejecutarTurnoNocturno(
+                this,
+                contexto
+        );
     }
 
-    public void votarEn(Votacion votacion) {
-        this.estado.votarEn(this, votacion);
+    public void elegirObjetivo(Jugador objetivo) {
+
+        this.objetivoNocturno = Optional.of(objetivo);
     }
 
-    public void agruparseEn(ContadorDeBandos contador) {
-        this.estado.agruparseEn(this, contador);
+    public void ejecutarTurnoDiurno(
+            Partida partida
+    ) {
+        estado.ejecutarTurnoDiurno(
+                this,
+                partida
+        );
+    }
+
+    public void votarEn(
+            Votacion votacion
+    ) {
+        estado.votarEn(
+                this,
+                votacion
+        );
+    }
+
+    public void votarEnBallotage(
+            Votacion votacion,
+            List<Jugador> candidatos
+    ) {
+        estado.votarEnBallotage(
+                this,
+                votacion,
+                candidatos
+        );
+    }
+
+    public void abstenerse() {
+        this.objetivoNocturno = Optional.empty();
+    }
+
+    public void agruparseEn(
+            ContadorDeBandos contador
+    ) {
+        estado.agruparseEn(
+                this,
+                contador
+        );
     }
 
     public void eliminar() {
-        this.estado.eliminar(this);
+        estado.eliminar(this);
     }
 
-    public boolean estaVivo() {
-        return this.estado instanceof EstadoVivo;
-    }
-
-    public Rol getRol() {
-        return this.rol;
-    }
-
-    public void cambiarEstado(EstadoJugador nuevoEstado) {
+    public void cambiarEstado(
+            EstadoJugador nuevoEstado
+    ) {
         this.estado = nuevoEstado;
     }
 
-    public void votarEnBallotage(Votacion votacion, List<Jugador> candidatos) {
-        this.estado.votarEnBallotage(this, votacion, candidatos);
+    public boolean estaVivo() {
+        return estado.estaVivo();
+    }
+
+    public boolean esSospechoso() {
+        return rol.esSospechoso();
+    }
+
+    public boolean esAliadoDe(
+            Jugador otro) {
+
+        return rol.esAliadoDe(
+                otro.rol
+        );
+    }
+
+    public void agruparseSegunRol(
+            ContadorDeBandos contador
+    ) {
+        rol.agruparseEn(contador);
+    }
+
+    public Optional<AccionNocturna> prepararAccionNocturna() {
+
+        return rol.prepararAccion(this, objetivoNocturno);
     }
 
     public Optional<Rol> obtenerRolRevelado() {
-        if (!this.estaVivo()) {
-            return Optional.of(this.rol);
+        if (!estaVivo()) {
+            return Optional.of(rol);
         }
+
         return Optional.empty();
     }
 }
