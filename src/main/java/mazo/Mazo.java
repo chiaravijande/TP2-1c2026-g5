@@ -24,14 +24,10 @@ public class Mazo {
         this.mezclador = mezclador;
     }
 
-    public void repartir(List<Jugador> jugadores) {
-        List<Rol> roles = configuracion.generarRoles(jugadores.size());
-
+    public List<Rol> repartir(int cantidadJugadores) {
+        List<Rol> roles = configuracion.generarRoles(cantidadJugadores);
         mezclador.mezclar(roles);
-
-        for(int i = 0; i <  jugadores.size(); i++) {
-            jugadores.get(i).setRol(roles.get(i));
-        }
+        return roles;
     }
 
 }
