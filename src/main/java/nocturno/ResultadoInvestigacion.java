@@ -2,21 +2,38 @@ package nocturno;
 
 import jugadores.Jugador;
 
-public class ResultadoInvestigacion {
+public class ResultadoInvestigacion
+        implements AccionNocturna {
 
     private Jugador investigado;
     private boolean inocente;
+    private Jugador investigador;
 
-    //el constructor recibe quien investigó el detective y el resultado de esa investigación
-    public ResultadoInvestigacion(Jugador investigado, boolean inocente) {
+    /*public ResultadoInvestigacion(
+            Jugador investigado
+    ) {
         this.investigado = investigado;
-        this.inocente = inocente;
+        this.inocente =
+                !investigado.esSospechoso();
+    }*/
+    public ResultadoInvestigacion(
+            Jugador investigador,
+            Jugador investigado) {
+
+        this.investigador = investigador;
+        this.investigado = investigado;
+        this.inocente =
+                !investigado.esSospechoso();
     }
 
-    //devuelve el resultado de la votacion,
-    //"pareceInocente" porque puede no ser inocente e igualmente devolver true (caso padrino)
+    @Override
+    public void ejecutar(
+            RegistroNocturno registro
+    ) {
+        registro.registrarInvestigacion(this);
+    }
+
     public boolean pareceInocente() {
-        return this.inocente;
+        return inocente;
     }
-
 }
