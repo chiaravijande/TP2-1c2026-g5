@@ -114,18 +114,13 @@ public class MazoTest {
     ////////////////////////////////////////
 
     @Test
-    void cadaJugadorRecibeExactamenteUnRol() {
-        // Arrange
-        List<Jugador> jugadores = jugadoresMock(7);
+    void repartirDevuelveUnRolPorJugador() {
+        //Arrange
         Mazo mazo = new Mazo(ConfiguracionMazo.para(7));
-
-        // Act
-        mazo.repartir(jugadores);
-
-        // Assert
-        jugadores.forEach(jugador ->
-                verify(jugador, times(1)).setRol(any(Rol.class))
-        );
+        //Act
+        List<Rol> roles = mazo.repartir(7);
+        //Assert
+        assertEquals(7, roles.size());
     }
 
     /////////////////////////////////////////////////
@@ -141,7 +136,7 @@ public class MazoTest {
 
         Mazo mazo = new Mazo(ConfiguracionMazo.para(10), mezclador);
         // Act
-        mazo.repartir(jugadores);
+        mazo.repartir(10);
         // Assert
         verify(mezclador, times(1)).mezclar(anyList());
     }

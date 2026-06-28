@@ -45,7 +45,7 @@ public class FaseDiurnaTest {
 
     @Test
     public void test03JugadorMuertoNoPuedeHacerNada() {
-        Jugador jugador = new Jugador("Muerto");
+        Jugador jugador = new Jugador("Muerto", mock(Rol.class));
         jugador.eliminar(); //pasa a EstadoMuerto
 
         Votacion votacionMock = mock(Votacion.class);
@@ -57,9 +57,8 @@ public class FaseDiurnaTest {
 
     @Test
     public void test04LaCartaDelJugadorSeRevelaAlSerEliminado() {
-        Jugador jugador = new Jugador("Pedro");
         Rol rolMock = mock(Rol.class);
-        jugador.setRol(rolMock);
+        Jugador jugador = new Jugador("Pedro", rolMock);
 
         //mientras esta vivo, la carta esta oculta
         assertTrue(jugador.obtenerRolRevelado().isEmpty(), "La carta debe estar oculta mientras viva");

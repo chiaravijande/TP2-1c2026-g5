@@ -4,6 +4,7 @@ import partida.*;
 import fases.*;
 import nocturno.*;
 import jugadores.Jugador;
+import roles.Rol;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class FaseNocturnaTest {
         Partida partidaFalsa = mock(Partida.class);
         Jugador victimaFalsa = mock(Jugador.class);
 
-        Jugador atacanteImpostor = new Jugador("MafiosoFalso") {
+        Jugador atacanteImpostor = new Jugador("MafiosoFalso", mock(Rol.class)) {
 
             @Override
             public void ejecutarTurnoNocturno(RegistroNocturno contexto) {
@@ -44,7 +45,7 @@ public class FaseNocturnaTest {
         Partida partidaFalsa = mock(Partida.class);
         Jugador victimaFalsa = mock(Jugador.class);
 
-        Jugador atacanteImpostor = new Jugador("MafiosoFalso") {
+        Jugador atacanteImpostor = new Jugador("MafiosoFalso", mock(Rol.class)) {
 
             @Override
             public void ejecutarTurnoNocturno(RegistroNocturno contexto) {

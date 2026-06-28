@@ -1,4 +1,4 @@
-papackage estado;
+package estado;
 
 import jugadores.Jugador;
 import nocturno.AccionNocturna;
