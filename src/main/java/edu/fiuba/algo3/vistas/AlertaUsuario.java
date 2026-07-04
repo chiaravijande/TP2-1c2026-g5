@@ -2,6 +2,8 @@ package edu.fiuba.algo3.vistas;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 
 public class AlertaUsuario {
 
@@ -22,5 +24,13 @@ public class AlertaUsuario {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+
+    public static Optional<ButtonType> mostrarConfirmacion(String titulo, String mensaje) {
+        Alert alerta = new Alert(AlertType.CONFIRMATION);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        return alerta.showAndWait();
     }
 }

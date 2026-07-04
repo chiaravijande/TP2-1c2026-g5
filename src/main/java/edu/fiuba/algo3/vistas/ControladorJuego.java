@@ -12,12 +12,15 @@ import fases.FaseNocturna;
 import roles.Rol;
 import votacion.Votacion;
 import votacion.ResultadoVotacion;
+import nocturno.ResultadoInvestigacion;
+import roles.ciudadanos.Sheriff;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javafx.scene.control.ButtonType;
 
 public class ControladorJuego {
 
@@ -93,7 +96,41 @@ public class ControladorJuego {
     }
 
     public void mostrarFaseDiurna() {
-        ContenedorFaseDiurna contenedorDia = new ContenedorFaseDiurna(this, this.partida, this.mapaNombres);
+
+        // Si algún Sheriff decidió revelarse durante la noche,
+        // se anuncia antes de comenzar la votación.
+        for (Jugador jugador : partida.jugadoresVivos()) {
+
+            Optional<ResultadoInvestigacion> resultado =
+                    jugador.revelarInvestigacion();
+
+            if (resultado.isPresent()) {
+
+                ResultadoInvestigacion investigacion = resultado.get();
+
+                String bando =
+                        investigacion.pareceInocente()
+                                ? "🛡️ CIUDADANO"
+                                : "🩸 MAFIA";
+
+                AlertaUsuario.mostrarInformacion(
+                        "⭐ EL SHERIFF SE REVELA",
+                        "El jugador "
+                                + mapaNombres.get(jugador).toUpperCase()
+                                + " revela públicamente que es el SHERIFF.\n\n"
+                                + "Su investigación demuestra que "
+                                + mapaNombres.get(investigacion.investigado()).toUpperCase()
+                                + " pertenece al bando "
+                                + bando
+                );
+
+                break;
+            }
+        }
+
+        ContenedorFaseDiurna contenedorDia =
+                new ContenedorFaseDiurna(this, this.partida, this.mapaNombres);
+
         stage.setScene(new Scene(contenedorDia, 800, 600));
     }
 
@@ -137,24 +174,28 @@ public class ControladorJuego {
         }
     }
 
+
     public void ejecutarAccionNocturna(
             Jugador jugador,
             Jugador objetivo) {
 
         jugador.elegirObjetivo(objetivo);
 
-        String nombreRol =
-                jugador.getRol().nombre();
+        String nombreRol = jugador.getRol().nombre();
 
-        if (nombreRol.equalsIgnoreCase("Detective")) {
+        if (jugador.esMafia()) {
 
-            boolean esSospechoso =
-                    objetivo.esSospechoso();
+            AlertaUsuario.mostrarInformacion(
+                    "🩸 Voto Registrado",
+                    "Tu voto en la reunión de la mafia quedó anotado sobre: "
+                            + mapaNombres.get(objetivo)
+                            + "\n\nSi hay empate al cierre de la noche, el voto del Padrino decide."
+            );
 
-            String bandoRevelado =
-                    esSospechoso
-                            ? "🩸 BANDO MAFIA"
-                            : "🛡️ BANDO CIUDADANO";
+        } else if (nombreRol.equalsIgnoreCase("Detective")|| nombreRol.equalsIgnoreCase("Sheriff")) {
+
+            boolean esSospechoso = objetivo.esSospechoso();
+            String bandoRevelado = esSospechoso ? "🩸 BANDO MAFIA" : "🛡️ BANDO CIUDADANO";
 
             AlertaUsuario.mostrarInformacion(
                     "🕵️‍♂️ Reporte Secreto",
@@ -181,6 +222,20 @@ public class ControladorJuego {
         jugador.abstenerse();
     }
 
+    public void preguntarSiQuiereRevelar(Jugador sheriff) {
+
+        Optional<ButtonType> respuesta =
+                AlertaUsuario.mostrarConfirmacion(
+                        "Sheriff",
+                        "¿Querés revelar públicamente esta investigación durante el próximo día?"
+                );
+
+        if (respuesta.isPresent()
+                && respuesta.get() == ButtonType.OK) {
+
+            ((Sheriff) sheriff.getRol()).decidirRevelarse();
+        }
+    }
 
     public void terminarFaseNocturna(ContenedorFaseNocturna vista) {
         partida.avanzar();
@@ -191,6 +246,7 @@ public class ControladorJuego {
             mostrarFaseDiurna();
         }
     }
+
 
     public void cerrarJuego() {
         stage.close();

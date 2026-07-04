@@ -20,6 +20,7 @@ import partida.Partida;
 import jugadores.Jugador;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class ContenedorFaseNocturna extends VBox {
@@ -37,6 +38,10 @@ public class ContenedorFaseNocturna extends VBox {
 
     private final String ESTILO_BOTON_OBJETIVO = "-fx-background-color: #222222; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 20; -fx-border-color: #444444; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
     private final String ESTILO_BOTON_OBJETIVO_HOVER = "-fx-background-color: #333333; -fx-text-fill: #D4AF37; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 20; -fx-border-color: #D4AF37; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
+    private final String ESTILO_BOTON_OBJETIVO_SELECCIONADO = "-fx-background-color: #4a1a1a; -fx-text-fill: " + COLOR_DESTACADO + "; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 20; -fx-border-color: " + COLOR_DESTACADO + "; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
+    private final String ESTILO_BOTON_CONFIRMAR = "-fx-background-color: #1B5E20; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 28; -fx-background-radius: 5; -fx-cursor: hand;";
+    private final String ESTILO_BOTON_CONFIRMAR_HOVER = "-fx-background-color: #2E7D32; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 28; -fx-background-radius: 5; -fx-cursor: hand;";
+    private final String ESTILO_BOTON_CONFIRMAR_DESHABILITADO = "-fx-background-color: #2A2A2A; -fx-text-fill: #777777; -fx-font-family: 'Arial'; -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 28; -fx-background-radius: 5;";
 
     public ContenedorFaseNocturna(ControladorJuego controlador, Partida partida, Map<Jugador, String> mapaNombres) {
         this.controlador = controlador;
@@ -49,6 +54,8 @@ public class ContenedorFaseNocturna extends VBox {
         this.setSpacing(25);
         this.setPadding(new Insets(30));
         this.setStyle("-fx-background-color: " + COLOR_FONDO + ";");
+
+        GestorSonido.reproducirEfecto("transicion_fase_nocturna.wav");
 
         mostrarPantallaDePrivacidad();
     }
@@ -91,6 +98,12 @@ public class ContenedorFaseNocturna extends VBox {
         StackPane naipeInteractivo = new StackPane();
         naipeInteractivo.setMaxSize(200, 280);
         naipeInteractivo.setStyle("-fx-cursor: hand;");
+
+        //contenedor de tamaño fijo que absorbe la animación del naipe
+        StackPane contenedorCarta = new StackPane(naipeInteractivo);
+        contenedorCarta.setPrefSize(200, 280);
+        contenedorCarta.setMinSize(200, 280);
+        contenedorCarta.setMaxSize(200, 280);
 
         VBox cardBack = new VBox(15);
         cardBack.setAlignment(Pos.CENTER);
@@ -142,6 +155,9 @@ public class ContenedorFaseNocturna extends VBox {
 
         cardBack.setOnMouseClicked(e -> {
             cardBack.setDisable(true);
+
+            GestorSonido.reproducirEfecto("sonido_de_carta.wav");
+
             RotateTransition rotarMitad1 = new RotateTransition(Duration.millis(250), naipeInteractivo);
             rotarMitad1.setAxis(Rotate.Y_AXIS);
             rotarMitad1.setFromAngle(0);
@@ -166,15 +182,22 @@ public class ContenedorFaseNocturna extends VBox {
             rotarMitad1.play();
         });
 
-        this.getChildren().add(naipeInteractivo);
+        this.getChildren().add(contenedorCarta);
 
         if (nombreRol.equalsIgnoreCase("Ciudadano")) {
+
             Label lblInfo = new Label("No posees acciones nocturnas.\nEspera a que el pueblo despierte.");
             lblInfo.setTextFill(Color.web("#BBBBBB"));
             lblInfo.setFont(Font.font("Arial", 15));
             lblInfo.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
             panelOpcionesOcultas.getChildren().add(lblInfo);
+
+        } else if (jugadorActual.esMafia()) {
+
+            panelOpcionesOcultas.getChildren().add(crearSalaDeMafia(jugadorActual));
+
         } else {
+
             Label lblAccion = new Label("🎯 Selecciona tu objetivo estratégico de la noche:");
             lblAccion.setTextFill(Color.WHITE);
             lblAccion.setFont(Font.font("Arial", FontWeight.BOLD, 15));
@@ -185,21 +208,46 @@ public class ContenedorFaseNocturna extends VBox {
             grillaObjetivos.setHgap(12);
             grillaObjetivos.setVgap(12);
 
+            Map<Button, Jugador> botonesObjetivo = new HashMap<>();
+            Jugador[] seleccionActual = new Jugador[1];
+
+            Button btnConfirmar = new Button("✅ CONFIRMAR OBJETIVO");
+            btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR_DESHABILITADO);
+            btnConfirmar.setDisable(true);
+
             int col = 0, fila = 0;
             for (Jugador objetivo : jugadoresVivos) {
                 Button btnObjetivo = new Button(mapaNombres.get(objetivo));
-                configurarBotonInteractivo(btnObjetivo, ESTILO_BOTON_OBJETIVO, ESTILO_BOTON_OBJETIVO_HOVER);
+                botonesObjetivo.put(btnObjetivo, objetivo);
+                btnObjetivo.setStyle(ESTILO_BOTON_OBJETIVO);
 
-                // 🔥 ACCIÓN MVC: Delegamos la ejecución lógica de la acción nocturna
+                btnObjetivo.setOnMouseEntered(e -> {
+                    if (seleccionActual[0] != objetivo) btnObjetivo.setStyle(ESTILO_BOTON_OBJETIVO_HOVER);
+                });
+                btnObjetivo.setOnMouseExited(e -> {
+                    btnObjetivo.setStyle(seleccionActual[0] == objetivo ? ESTILO_BOTON_OBJETIVO_SELECCIONADO : ESTILO_BOTON_OBJETIVO);
+                });
+
                 btnObjetivo.setOnAction(evt -> {
-                    controlador.ejecutarAccionNocturna(jugadorActual, objetivo);
-                    animarCambioPantalla(this::avanzarTurno);
+                    seleccionActual[0] = objetivo;
+                    actualizarSeleccion(botonesObjetivo, objetivo, ESTILO_BOTON_OBJETIVO, ESTILO_BOTON_OBJETIVO_SELECCIONADO);
+                    habilitarConfirmar(btnConfirmar);
                 });
 
                 grillaObjetivos.add(btnObjetivo, col, fila);
                 col++; if (col > 3) { col = 0; fila++; }
             }
             panelOpcionesOcultas.getChildren().add(grillaObjetivos);
+
+            btnConfirmar.setOnAction(evt -> {
+                controlador.ejecutarAccionNocturna(jugadorActual, seleccionActual[0]);
+                if (nombreRol.equalsIgnoreCase("Sheriff")) {
+                    controlador.preguntarSiQuiereRevelar(jugadorActual);
+                }
+
+                animarCambioPantalla(this::avanzarTurno);
+            });
+            panelOpcionesOcultas.getChildren().add(btnConfirmar);
         }
 
         Button btnDormir = new Button("ABSTENERSE / CONVENTILLO E IR A DORMIR 🌙");
@@ -222,7 +270,7 @@ public class ContenedorFaseNocturna extends VBox {
         if (indiceJugadorActual < jugadoresVivos.size()) {
             mostrarPantallaDePrivacidad();
         } else {
-            // 🔥 ACCIÓN MVC: El controlador evalúa el fin de la noche y decide el próximo escenario
+            //ACCIÓN MVC: El controlador evalúa el fin de la noche y decide el próximo escenario
             controlador.terminarFaseNocturna(this);
         }
     }
@@ -282,5 +330,118 @@ public class ContenedorFaseNocturna extends VBox {
         btnSalir.setOnAction(e -> controlador.cerrarJuego());
 
         this.getChildren().addAll(lblFin, lblAnuncio, btnSalir);
+    }
+
+    private VBox crearSalaDeMafia(Jugador jugadorActual) {
+
+        VBox sala = new VBox(15);
+        sala.setAlignment(Pos.CENTER);
+
+        Label lblTitulo = new Label("🩸 REUNIÓN SECRETA DE LA MAFIA 🩸");
+        lblTitulo.setTextFill(Color.web(COLOR_DESTACADO));
+        lblTitulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        List<Jugador> compañeros = jugadoresVivos.stream()
+                .filter(Jugador::esMafia)
+                .filter(j -> j != jugadorActual)
+                .collect(Collectors.toList());
+
+        VBox panelCompañeros = new VBox(8);
+        panelCompañeros.setAlignment(Pos.CENTER);
+        panelCompañeros.setPadding(new Insets(15));
+        panelCompañeros.setMaxWidth(420);
+        panelCompañeros.setStyle("-fx-background-color: #1c1010; -fx-background-radius: 8; -fx-border-color: #4a1a1a; -fx-border-radius: 8;");
+
+        if (compañeros.isEmpty()) {
+            Label lblSolo = new Label("Sos el único miembro de la mafia con vida.");
+            lblSolo.setTextFill(Color.web("#CCCCCC"));
+            lblSolo.setFont(Font.font("Arial", 13));
+            panelCompañeros.getChildren().add(lblSolo);
+        } else {
+            for (Jugador compañero : compañeros) {
+                String etiquetaRol = compañero.tienePrioridadDeDesempate() ? " (🎩 Padrino)" : "";
+                String estadoVoto = compañero.objetivoElegido()
+                        .map(obj -> "votó a " + mapaNombres.get(obj))
+                        .orElse("aún no votó");
+
+                Label lblFila = new Label("👤 " + mapaNombres.get(compañero) + etiquetaRol + " — " + estadoVoto);
+                lblFila.setTextFill(Color.WHITE);
+                lblFila.setFont(Font.font("Arial", 13));
+                panelCompañeros.getChildren().add(lblFila);
+            }
+        }
+
+        if (jugadorActual.tienePrioridadDeDesempate()) {
+            Label lblPrioridad = new Label("🎩 Sos el Padrino: si la votación de esta noche termina en empate, tu voto decide.");
+            lblPrioridad.setTextFill(Color.web(COLOR_DESTACADO));
+            lblPrioridad.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            lblPrioridad.setWrapText(true);
+            lblPrioridad.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+            panelCompañeros.getChildren().add(lblPrioridad);
+        }
+
+        Label lblAccion = new Label("🎯 Emití tu voto para el ataque de esta noche:");
+        lblAccion.setTextFill(Color.WHITE);
+        lblAccion.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+
+        GridPane grillaVotos = new GridPane();
+        grillaVotos.setAlignment(Pos.CENTER);
+        grillaVotos.setHgap(12);
+        grillaVotos.setVgap(12);
+
+        List<Jugador> objetivosValidos = jugadoresVivos.stream()
+                .filter(j -> !j.esMafia())
+                .collect(Collectors.toList());
+
+        Map<Button, Jugador> botonesVoto = new HashMap<>();
+        Jugador[] seleccionActual = new Jugador[1];
+
+        Button btnConfirmar = new Button("✅ CONFIRMAR VOTO DE LA MAFIA");
+        btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR_DESHABILITADO);
+        btnConfirmar.setDisable(true);
+
+        int col = 0, fila = 0;
+        for (Jugador objetivo : objetivosValidos) {
+            Button btnVoto = new Button(mapaNombres.get(objetivo));
+            botonesVoto.put(btnVoto, objetivo);
+            btnVoto.setStyle(ESTILO_BOTON_OBJETIVO);
+
+            btnVoto.setOnMouseEntered(e -> {
+                if (seleccionActual[0] != objetivo) btnVoto.setStyle(ESTILO_BOTON_OBJETIVO_HOVER);
+            });
+            btnVoto.setOnMouseExited(e -> {
+                btnVoto.setStyle(seleccionActual[0] == objetivo ? ESTILO_BOTON_OBJETIVO_SELECCIONADO : ESTILO_BOTON_OBJETIVO);
+            });
+
+            btnVoto.setOnAction(evt -> {
+                seleccionActual[0] = objetivo;
+                actualizarSeleccion(botonesVoto, objetivo, ESTILO_BOTON_OBJETIVO, ESTILO_BOTON_OBJETIVO_SELECCIONADO);
+                habilitarConfirmar(btnConfirmar);
+            });
+
+            grillaVotos.add(btnVoto, col, fila);
+            col++; if (col > 3) { col = 0; fila++; }
+        }
+
+        btnConfirmar.setOnAction(evt -> {
+            controlador.ejecutarAccionNocturna(jugadorActual, seleccionActual[0]);
+            animarCambioPantalla(this::avanzarTurno);
+        });
+
+        sala.getChildren().addAll(lblTitulo, panelCompañeros, lblAccion, grillaVotos, btnConfirmar);
+        return sala;
+    }
+
+    private void actualizarSeleccion(Map<Button, Jugador> botones, Jugador seleccionado, String estiloNormal, String estiloSeleccionado) {
+        for (Map.Entry<Button, Jugador> entrada : botones.entrySet()) {
+            entrada.getKey().setStyle(entrada.getValue() == seleccionado ? estiloSeleccionado : estiloNormal);
+        }
+    }
+
+    private void habilitarConfirmar(Button btnConfirmar) {
+        btnConfirmar.setDisable(false);
+        btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR);
+        btnConfirmar.setOnMouseEntered(e -> btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR_HOVER));
+        btnConfirmar.setOnMouseExited(e -> btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR));
     }
 }
