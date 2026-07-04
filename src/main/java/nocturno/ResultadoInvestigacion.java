@@ -9,21 +9,13 @@ public class ResultadoInvestigacion
     private boolean inocente;
     private Jugador investigador;
 
-    /*public ResultadoInvestigacion(
-            Jugador investigado
-    ) {
-        this.investigado = investigado;
-        this.inocente =
-                !investigado.esSospechoso();
-    }*/
     public ResultadoInvestigacion(
             Jugador investigador,
             Jugador investigado) {
 
         this.investigador = investigador;
         this.investigado = investigado;
-        this.inocente =
-                !investigado.esSospechoso();
+        this.inocente = !investigado.esSospechoso();
     }
 
     @Override
@@ -35,5 +27,22 @@ public class ResultadoInvestigacion
 
     public boolean pareceInocente() {
         return inocente;
+    }
+
+    public Jugador investigado() {
+        return investigado;
+    }
+
+    public Jugador investigador() {
+        return investigador;
+    }
+
+    public String descripcion() {
+
+        if (pareceInocente()) {
+            return investigado.getNombre() + " parece inocente.";
+        }
+
+        return investigado.getNombre() + " pertenece a la mafia.";
     }
 }
