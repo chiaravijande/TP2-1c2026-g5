@@ -3,6 +3,7 @@ package jugadores;
 import estado.*;
 import nocturno.AccionNocturna;
 import nocturno.RegistroNocturno;
+import nocturno.ResultadoInvestigacion;
 import partida.ContadorDeBandos;
 import partida.Partida;
 import roles.*;
@@ -125,11 +126,34 @@ public class Jugador {
         return rol.prepararAccion(this, objetivoNocturno);
     }
 
+    public boolean tienePrioridadDeDesempate() {
+        return rol.tienePrioridadDeDesempate();
+    }
+
+    public boolean esMafia() {
+        return rol.esMafia();
+    }
+
+    public Optional<Jugador> objetivoElegido() {
+        return objetivoNocturno;
+    }
+
     public Optional<Rol> obtenerRolRevelado() {
         if (!estaVivo()) {
             return Optional.of(rol);
         }
 
+        if (rol.revelaInformacion())
+            return Optional.of(rol);
+
         return Optional.empty();
     }
+
+    public Optional<ResultadoInvestigacion> revelarInvestigacion() {
+        return rol.revelarInvestigacion();
+    }//para el sheriff
+
+    public boolean puedeRevelarInvestigacion() {
+        return rol.puedeRevelarInvestigacion();
+    }//tmb para sheriff
 }
