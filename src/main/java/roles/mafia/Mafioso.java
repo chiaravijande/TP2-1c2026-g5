@@ -2,7 +2,7 @@ package roles.mafia;
 
 import jugadores.Jugador;
 import nocturno.AccionNocturna;
-import nocturno.AtaqueNocturno;
+import nocturno.VotoMafia;
 import partida.ContadorDeBandos;
 import roles.Rol;
 
@@ -15,30 +15,12 @@ public class Mafioso extends Rol {
         return "Mafioso";
     }
 
-    /*@Override
-    public Optional<AccionNocturna>
-    prepararAccion(
-            Jugador actor,
-            Jugador objetivo) {
-
-        if (objetivo == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(
-                new AtaqueNocturno(
-                        actor,
-                        objetivo
-                )
-        );
-    }*/
-    
     @Override
     public Optional<AccionNocturna> prepararAccion(
             Jugador actor,
             Optional<Jugador> objetivo) {
 
-        return objetivo.map(jugador -> new AtaqueNocturno(actor, jugador));
+        return objetivo.map(jugador -> new VotoMafia(actor, jugador));
     }
 
     @Override

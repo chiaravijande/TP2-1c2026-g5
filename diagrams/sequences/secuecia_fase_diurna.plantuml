@@ -1,0 +1,47 @@
+@startuml
+autonumber
+title Secuencia de Fase Diurna (Votación del Pueblo y Desempate)
+
+participant "FaseDiurna" as FD
+participant "Partida" as P
+participant "Jugador" as J
+participant "Votacion" as V
+participant "MecanismoEmpate" as ME
+
+[-> FD : ejecutar(partida)
+activate FD
+
+create V
+FD -> V : new Votacion()
+
+loop Para cada jugador vivo
+    FD -> J : votarEn(votacion)
+    note over J: El estado delega el voto en la urna
+    J -> V : registrarVoto(votante, votado)
+end
+
+FD -> V : calcularResultado()
+activate V
+V --> FD : ResultadoVotacion
+deactivate V
+
+alt Si no hay un expulsado directo (Empate)
+    FD -> V : obtenerEmpatados()
+    V --> FD : listaDeEmpatados
+    
+    FD -> ME : resolver(empatados, votacion)
+    activate ME
+    note over ME: Puede ser SinEliminacion o iniciar un Ballotage reactivando votos
+    ME --> FD : Optional<Jugador> (expulsado)
+    deactivate ME
+end
+
+alt Si hay un jugador expulsado definitivo
+    FD -> P : eliminarJugador(aEliminar)
+    activate P
+    P -> J : eliminar()
+    deactivate P
+end
+
+deactivate FD
+@enduml

@@ -11,6 +11,8 @@ public abstract class Investigador
         extends RolCiudadano {
 
     private Jugador ultimoInvestigado;
+    private Optional<ResultadoInvestigacion> ultimaInvestigacion =
+            Optional.empty();
 
     @Override
     public Optional<AccionNocturna> prepararAccion(
@@ -18,12 +20,30 @@ public abstract class Investigador
             Optional<Jugador> objetivo) {
 
         return objetivo.flatMap(jugador -> {
+
             if (jugador == ultimoInvestigado) {
                 return Optional.empty();
             }
+
             ultimoInvestigado = jugador;
-            return Optional.of(new ResultadoInvestigacion(actor, jugador));
+
+            ResultadoInvestigacion resultado =
+                    new ResultadoInvestigacion(actor, jugador);
+
+            ultimaInvestigacion =
+                    Optional.of(resultado);
+
+            return Optional.of(resultado);
         });
+    }
+
+    @Override
+    public Optional<ResultadoInvestigacion> revelarInvestigacion() {
+        return Optional.empty();
+    }
+
+    protected Optional<ResultadoInvestigacion> ultimaInvestigacion() {
+        return ultimaInvestigacion;
     }
 }
 

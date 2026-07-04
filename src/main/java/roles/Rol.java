@@ -3,7 +3,7 @@ package roles;
 import jugadores.Jugador;
 import nocturno.AccionNocturna;
 import partida.ContadorDeBandos;
-
+import nocturno.ResultadoInvestigacion;
 import java.util.Optional;
 
 public abstract class Rol {
@@ -45,6 +45,17 @@ public abstract class Rol {
     }
 
     public boolean tieneAccionNocturna() {
+        return false;
+    }
+
+    public boolean tienePrioridadDeDesempate() {
+        return false;
+    }
+    public Optional<ResultadoInvestigacion> revelarInvestigacion() {
+        return Optional.empty();
+    }
+
+    public boolean puedeRevelarInvestigacion() {
         return false;
     }
 }
