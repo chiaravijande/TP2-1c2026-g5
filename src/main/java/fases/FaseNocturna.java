@@ -16,15 +16,15 @@ public class FaseNocturna extends Fase {
         RegistroNocturno registro =
                 new RegistroNocturno();
 
-        for (Jugador jugador :
-                partida.getJugadores()) {
+        //antes iba aca
 
-            jugador.ejecutarTurnoNocturno(
-                    registro
-            );
+        for (Jugador jugador : partida.getJugadores()) {
+
+            jugador.ejecutarTurnoNocturno(registro);
         }
 
         registro.ejecutarAcciones();
+        registro.resolverAtaqueMafia();
 
         ResultadoNocturno resultado =
                 registro.generarResultado();
@@ -33,6 +33,11 @@ public class FaseNocturna extends Fase {
                 .ifPresent(
                         partida::eliminarJugador
                 );
+        /* limpia los objetivos elegidos en la noche anterior antes de que arranque esta, movi este metodo
+        aca a lo ultimo porque antes se borraba tod0 el registro de entrada*/
+        for (Jugador jugador : partida.getJugadores()) {
+            jugador.abstenerse();
+        }
     }
 
     @Override
