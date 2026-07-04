@@ -11,5 +11,9 @@ public class Padrino extends Mafioso {
     public boolean esSospechoso() {
         return false;
     }
-}
 
+    @Override
+    public boolean tienePrioridadDeDesempate() {
+        return true;
+    }
+}

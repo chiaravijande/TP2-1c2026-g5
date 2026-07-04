@@ -14,9 +14,8 @@ public class Votacion {
     }
 
     public void registrarVoto(Jugador votante, Jugador votado) {
-        //valida que las nominaciones solo incluyen a jugadores vivos
         if (votado != null && !votado.estaVivo()) {
-            return; //se rechaza el voto a un jugador muerto
+            return; 
         }
         this.votos.put(votante, votado);
     }
@@ -24,6 +23,7 @@ public class Votacion {
     public void registrarAbstencion(Jugador votante) {
         this.votos.put(votante, null);
     }
+
 
     public ResultadoVotacion calcularResultado() {
         if (this.votos.isEmpty()) return new ResultadoVotacion(Optional.empty());
@@ -38,7 +38,6 @@ public class Votacion {
         int maxVotos = 0;
         this.empatados.clear();
 
-        //encontramos la cantidad maxima de votos y quienes son los mas votados
         for (Map.Entry<Jugador, Integer> entrada : conteo.entrySet()) {
             int cantidadVotos = entrada.getValue();
             Jugador candidato = entrada.getKey();
@@ -52,12 +51,23 @@ public class Votacion {
             }
         }
 
-        // Si hay más de un jugador con la cantidad máxima de votos, es empate
-        if (this.empatados.size() > 1 || this.empatados.isEmpty()) {
+        if (this.empatados.isEmpty()) {
             return new ResultadoVotacion(Optional.empty());
         }
 
+        if (this.empatados.size() > 1) {
+            return new ResultadoVotacion(resolverEmpate(this.empatados));
+        }
+
         return new ResultadoVotacion(Optional.of(this.empatados.get(0)));
+    }
+
+    protected Optional<Jugador> resolverEmpate(List<Jugador> empatados) {
+        return Optional.empty();
+    }
+
+    protected Optional<Jugador> obtenerVotoDe(Jugador votante) {
+        return Optional.ofNullable(this.votos.get(votante));
     }
 
     public List<Jugador> obtenerEmpatados() {

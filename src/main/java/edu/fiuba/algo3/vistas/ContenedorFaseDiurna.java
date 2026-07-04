@@ -38,6 +38,12 @@ public class ContenedorFaseDiurna extends VBox {
 
         private final String ESTILO_BOTON_VOTO = "-fx-background-color: #222222; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 15 22; -fx-border-color: #990000; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
         private final String ESTILO_BOTON_VOTO_HOVER = "-fx-background-color: " + COLOR_ACCION + "; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 15 22; -fx-border-color: #D4AF37; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_VOTO_SELECCIONADO = "-fx-background-color: #6B0000; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 15 22; -fx-border-color: " + COLOR_DESTACADO + "; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_ABSTENCION = "-fx-background-color: #333333; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 25; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_ABSTENCION_HOVER = "-fx-background-color: #444444; -fx-text-fill: " + COLOR_DESTACADO + "; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 25; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_CONFIRMAR = "-fx-background-color: #1B5E20; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 30; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_CONFIRMAR_HOVER = "-fx-background-color: #2E7D32; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 30; -fx-background-radius: 5; -fx-cursor: hand;";
+        private final String ESTILO_BOTON_CONFIRMAR_DESHABILITADO = "-fx-background-color: #2A2A2A; -fx-text-fill: #777777; -fx-font-family: 'Arial'; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 30; -fx-background-radius: 5;";
 
         public ContenedorFaseDiurna(ControladorJuego controlador, Partida partida, Map<Jugador, String> mapaNombres) {
                 this.controlador = controlador;
@@ -50,6 +56,8 @@ public class ContenedorFaseDiurna extends VBox {
                 this.setSpacing(25);
                 this.setPadding(new Insets(30));
                 this.setStyle("-fx-background-color: " + COLOR_FONDO + ";");
+
+                GestorSonido.reproducirEfecto("transicion_fase_diurna.wav");
 
                 mostrarPantallaPrivacidadVoto();
         }
@@ -65,6 +73,7 @@ public class ContenedorFaseDiurna extends VBox {
                 panelCentralUrna.setPadding(new Insets(35));
                 panelCentralUrna.setMaxWidth(450);
                 panelCentralUrna.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-border-color: #292929; -fx-border-width: 2; -fx-border-radius: 10;");
+
 
                 Label lblInstruccion = new Label("Urna de Votación Privada habilitada para:");
                 lblInstruccion.setTextFill(Color.web("#AAAAAA"));
@@ -103,6 +112,17 @@ public class ContenedorFaseDiurna extends VBox {
                 lblAviso.setFont(Font.font("Arial", 15));
                 this.getChildren().addAll(lblTitulo, lblAviso);
 
+                // seleccionActual[0] == null es ambiguo (nada elegido vs. abstención),
+                // por eso haySeleccion marca explícitamente si ya se tocó algún botón.
+                Jugador[] seleccionActual = new Jugador[1];
+                boolean[] haySeleccion = new boolean[1];
+                Map<Button, Jugador> botonesCandidato = new HashMap<>();
+                Button[] botonAbstenerRef = new Button[1];
+
+                Button btnConfirmar = new Button("✅ CONFIRMAR VOTO");
+                btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR_DESHABILITADO);
+                btnConfirmar.setDisable(true);
+
                 GridPane grillaVotos = new GridPane();
                 grillaVotos.setAlignment(Pos.CENTER);
                 grillaVotos.setHgap(15);
@@ -111,11 +131,27 @@ public class ContenedorFaseDiurna extends VBox {
                 int columna = 0, fila = 0;
                 for (Jugador acusado : jugadoresVivos) {
                         Button btnVotar = new Button("Acusar a " + mapaNombres.get(acusado));
-                        configurarBotonInteractivo(btnVotar, ESTILO_BOTON_VOTO, ESTILO_BOTON_VOTO_HOVER);
+                        btnVotar.setStyle(ESTILO_BOTON_VOTO);
+                        botonesCandidato.put(btnVotar, acusado);
+
+                        btnVotar.setOnMouseEntered(e -> {
+                                if (!(haySeleccion[0] && seleccionActual[0] == acusado)) {
+                                        btnVotar.setStyle(ESTILO_BOTON_VOTO_HOVER);
+                                }
+                        });
+                        btnVotar.setOnMouseExited(e -> {
+                                boolean esElSeleccionado = haySeleccion[0] && seleccionActual[0] == acusado;
+                                btnVotar.setStyle(esElSeleccionado ? ESTILO_BOTON_VOTO_SELECCIONADO : ESTILO_BOTON_VOTO);
+                        });
 
                         btnVotar.setOnAction(e -> {
-                                eleccionesUI.put(votanteActual, acusado);
-                                animarCambioPantalla(this::avanzarSiguienteVotante);
+                                seleccionActual[0] = acusado;
+                                haySeleccion[0] = true;
+                                actualizarSeleccionCandidatos(botonesCandidato, acusado);
+                                if (botonAbstenerRef[0] != null) {
+                                        botonAbstenerRef[0].setStyle(ESTILO_BOTON_ABSTENCION);
+                                }
+                                habilitarConfirmar(btnConfirmar);
                         });
 
                         grillaVotos.add(btnVotar, columna, fila);
@@ -124,12 +160,46 @@ public class ContenedorFaseDiurna extends VBox {
                 this.getChildren().add(grillaVotos);
 
                 Button btnAbstenerse = new Button("✋ ABSTENERSE DE ACUSACIÓN");
-                configurarBotonInteractivo(btnAbstenerse, "-fx-background-color: #333333; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 25; -fx-background-radius: 5; -fx-cursor: hand;", "-fx-background-color: #444444; -fx-text-fill: " + COLOR_DESTACADO + "; -fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-padding: 12 25; -fx-background-radius: 5; -fx-cursor: hand;");
+                botonAbstenerRef[0] = btnAbstenerse;
+                btnAbstenerse.setStyle(ESTILO_BOTON_ABSTENCION);
+
+                btnAbstenerse.setOnMouseEntered(e -> {
+                        if (!(haySeleccion[0] && seleccionActual[0] == null)) {
+                                btnAbstenerse.setStyle(ESTILO_BOTON_ABSTENCION_HOVER);
+                        }
+                });
+                btnAbstenerse.setOnMouseExited(e -> {
+                        boolean esLaSeleccionada = haySeleccion[0] && seleccionActual[0] == null;
+                        btnAbstenerse.setStyle(esLaSeleccionada ? ESTILO_BOTON_VOTO_SELECCIONADO : ESTILO_BOTON_ABSTENCION);
+                });
+
                 btnAbstenerse.setOnAction(e -> {
-                        eleccionesUI.put(votanteActual, null);
-                        animarCambioPantalla(this::avanzarSiguienteVotante);
+                        seleccionActual[0] = null;
+                        haySeleccion[0] = true;
+                        actualizarSeleccionCandidatos(botonesCandidato, null);
+                        btnAbstenerse.setStyle(ESTILO_BOTON_VOTO_SELECCIONADO);
+                        habilitarConfirmar(btnConfirmar);
                 });
                 this.getChildren().add(btnAbstenerse);
+
+                btnConfirmar.setOnAction(e -> {
+                        eleccionesUI.put(votanteActual, seleccionActual[0]);
+                        animarCambioPantalla(this::avanzarSiguienteVotante);
+                });
+                this.getChildren().add(btnConfirmar);
+        }
+
+        private void actualizarSeleccionCandidatos(Map<Button, Jugador> botones, Jugador seleccionado) {
+                for (Map.Entry<Button, Jugador> entrada : botones.entrySet()) {
+                        entrada.getKey().setStyle(entrada.getValue() == seleccionado ? ESTILO_BOTON_VOTO_SELECCIONADO : ESTILO_BOTON_VOTO);
+                }
+        }
+
+        private void habilitarConfirmar(Button btnConfirmar) {
+                btnConfirmar.setDisable(false);
+                btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR);
+                btnConfirmar.setOnMouseEntered(e -> btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR_HOVER));
+                btnConfirmar.setOnMouseExited(e -> btnConfirmar.setStyle(ESTILO_BOTON_CONFIRMAR));
         }
 
         private void avanzarSiguienteVotante() {

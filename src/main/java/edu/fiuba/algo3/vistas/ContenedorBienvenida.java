@@ -29,6 +29,8 @@ public class ContenedorBienvenida extends VBox {
         this.setPadding(new Insets(25));
         this.setStyle("-fx-background-color: " + COLOR_FONDO + ";");
 
+        GestorSonido.reproducirFondo("mafia.wav");
+
         configurarContenido();
     }
 
@@ -87,7 +89,10 @@ public class ContenedorBienvenida extends VBox {
         btnComenzar.setOnMouseExited(e -> btnComenzar.setStyle("-fx-background-color: " + COLOR_ACCION + "; -fx-text-fill: white; -fx-font-family: 'Arial'; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 35; -fx-background-radius: 5; -fx-cursor: hand;"));
 
         // Delegamos en el controlador
-        btnComenzar.setOnAction(e -> controlador.mostrarSetup());
+        btnComenzar.setOnAction(e -> {
+            GestorSonido.detenerFondo();
+            controlador.mostrarSetup();
+        });
 
         this.getChildren().addAll(logoView, scroll, btnComenzar);
     }
