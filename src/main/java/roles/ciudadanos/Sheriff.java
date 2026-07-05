@@ -1,42 +1,68 @@
 package roles.ciudadanos;
 
-import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import nocturno.ResultadoInvestigacion;
+import partida.ContadorDeBandos;
 
-public class Sheriff extends RolCiudadano {
+import java.util.Optional;
+
+public class Sheriff extends Investigador {
 
     private boolean yaSeRevelo;
+    private boolean quiereRevelarse;
 
     public Sheriff() {
-        this.yaSeRevelo = false;
+        yaSeRevelo = false;
+        quiereRevelarse = false;
     }
 
     @Override
-    public void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    ) {
-
-        // No tiene acción nocturna
-
+    public String nombre() {
+        return "Sheriff";
     }
 
-    public void revelarInvestigacion(
-            String resultado
-    ) {
+    @Override
+    public void agruparseEn(ContadorDeBandos contador) {
+        contador.contarCiudadano();
+    }
 
-        if (yaSeRevelo) {
+    @Override
+    public boolean esSospechoso() {
+        return false;
+    }
 
-            throw new RuntimeException(
-                    "El sheriff ya usó su habilidad."
-            );
+    public boolean estaRevelado() {
+        return yaSeRevelo;
+    }
+
+    @Override
+    public boolean revelaInformacion() {
+        return yaSeRevelo;
+    }
+
+    @Override
+    public boolean puedeRevelarInvestigacion() {
+        return !yaSeRevelo &&
+                ultimaInvestigacion().isPresent();
+    }
+
+    public void decidirRevelarse() {
+        quiereRevelarse = true;
+    }
+
+    public boolean quiereRevelarse() {
+        return quiereRevelarse;
+    }
+    
+    @Override
+    public Optional<ResultadoInvestigacion> revelarInvestigacion() {
+
+        if (!quiereRevelarse || yaSeRevelo) {
+            return Optional.empty();
         }
 
-        System.out.println(
-                "Sheriff revela: " + resultado
-        );
-
         yaSeRevelo = true;
+        quiereRevelarse = false;
+
+        return ultimaInvestigacion();
     }
 }

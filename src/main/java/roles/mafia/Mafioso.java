@@ -1,34 +1,49 @@
 package roles.mafia;
 
 import jugadores.Jugador;
-import nocturno.AtaqueNocturno;
-import nocturno.ContextoNocturno;
-import roles.Bando;
+import nocturno.AccionNocturna;
+import nocturno.VotoMafia;
+import partida.ContadorDeBandos;
 import roles.Rol;
+
+import java.util.Optional;
 
 public class Mafioso extends Rol {
 
     @Override
-    public void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    ) {
-
-        AtaqueNocturno ataque =
-                new AtaqueNocturno(
-                        actor,
-                        objetivo
-                );
-
-        contexto.registrarAtaque(
-                ataque
-        );
+    public String nombre() {
+        return "Mafioso";
     }
 
     @Override
-    public Bando bando() {
+    public Optional<AccionNocturna> prepararAccion(
+            Jugador actor,
+            Optional<Jugador> objetivo) {
 
-        return Bando.MAFIA;
+        return objetivo.map(jugador -> new VotoMafia(actor, jugador));
+    }
+
+    @Override
+    public void agruparseEn(
+            ContadorDeBandos contador) {
+
+        contador.contarMafioso();
+    }
+
+    @Override
+    public boolean esSospechoso() {
+        return true;
+    }
+
+    @Override
+    public boolean esMafia() {
+        return true;
+    }
+
+    @Override
+    public boolean esAliadoDe(
+            Rol otro) {
+
+        return otro.esMafia();
     }
 }

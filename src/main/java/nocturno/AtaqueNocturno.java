@@ -2,43 +2,30 @@ package nocturno;
 
 import jugadores.Jugador;
 
-public class AtaqueNocturno {
+public class AtaqueNocturno implements AccionNocturna {
 
-    private Jugador atacante;
     private Jugador victima;
 
-    public AtaqueNocturno(
-            Jugador atacante,
-            Jugador victima
-    ) {
-        this.atacante = atacante;
+    public AtaqueNocturno(Jugador victima) {
         this.victima = victima;
+    }
+
+    @Override
+    public void ejecutar(RegistroNocturno registro) {
+        if (!victima.estaVivo()) {
+            return;
+        }
+        registro.registrarAtaque(this);
+    }
+
+    public boolean resolverCon(ProteccionNocturna proteccion) {
+        if (proteccion == null) {
+            return true;
+        }
+        return !proteccion.protege(this);
     }
 
     public Jugador getVictima() {
         return victima;
     }
-
-    public Jugador getAtacante() {
-        return atacante;
-    }
-
-    public ResultadoNocturno resolverCon(
-            ProteccionNocturna proteccion
-    ) {
-
-        if (proteccion == null) {
-            return serResueltoSinProteccion();
-        }
-
-        return proteccion.resolverAtaque(this);
-    }
-
-    public ResultadoNocturno serResueltoSinProteccion() {
-        return new ResultadoConVictima(victima);
-    }
 }
-
-
-
-

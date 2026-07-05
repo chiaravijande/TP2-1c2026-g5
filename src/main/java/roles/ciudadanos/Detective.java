@@ -1,26 +1,28 @@
 package roles.ciudadanos;
 
 import jugadores.Jugador;
-import nocturno.ContextoNocturno;
-import nocturno.Investigacion;
+import nocturno.RegistroNocturno;
+import nocturno.ResultadoInvestigacion;
+import partida.ContadorDeBandos;
+import roles.RolCiudadano;
+import roles.RolNocturno;
 
-public class Detective extends RolCiudadano {
+public class Detective extends Investigador {
 
     @Override
-    public void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    ) {
+    public String nombre() {
+        return "Detective";
+    }
 
-        Investigacion investigacion =
-                new Investigacion(
-                        actor,
-                        objetivo
-                );
+    @Override
+    public void agruparseEn(
+            ContadorDeBandos contador) {
 
-        contexto.registrarInvestigacion(
-                investigacion
-        );
+        contador.contarCiudadano();
+    }
+
+    @Override
+    public boolean esSospechoso() {
+        return false;
     }
 }

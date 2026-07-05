@@ -2,38 +2,34 @@ package nocturno;
 
 import jugadores.Jugador;
 
-public class ProteccionNocturna {
+public class ProteccionNocturna
+        implements AccionNocturna {
 
-    private Jugador protector;
     private Jugador protegido;
 
     public ProteccionNocturna(
-            Jugador protector,
-            Jugador protegido
-    ) {
-        this.protector = protector;
+            Jugador protegido) {
+
         this.protegido = protegido;
     }
 
-    public ResultadoNocturno resolverAtaque(
-            AtaqueNocturno ataque
-    ) {
+    @Override
+    public void ejecutar(
+            RegistroNocturno registro) {
 
-        if (ataque.getVictima().equals(protegido)) {
-            return new ResultadoSinVictima();
+        if (!protegido.estaVivo()) {
+            return;
         }
 
-        return ataque.serResueltoSinProteccion();
+        registro.registrarProteccion(this);
     }
 
-    public Jugador getProtector() {
-        return protector;
-    }
+    public boolean protege(
+            AtaqueNocturno ataque) {
 
-    public Jugador getProtegido() {
-        return protegido;
+        return protegido ==
+                ataque.getVictima();
     }
 }
-
 
 

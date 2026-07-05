@@ -1,10 +1,21 @@
 package nocturno;
 
-import partida.Partida;
+import jugadores.Jugador;
+import java.util.Optional;
 
-public abstract class ResultadoNocturno {
+public class ResultadoNocturno {
 
-    public abstract void aplicar(Partida partida);
+    private Optional<Jugador> victima;
 
-    public abstract void anunciar();
+    public ResultadoNocturno(Optional<Jugador> victima) {
+        this.victima = victima;
+    }
+
+    public Optional<Jugador> obtenerVictima() {
+        return this.victima;
+    }
+
+    public boolean huboVictima() {
+        return this.victima.isPresent();
+    }
 }

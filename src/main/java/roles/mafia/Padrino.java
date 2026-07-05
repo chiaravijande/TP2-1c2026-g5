@@ -1,12 +1,19 @@
 package roles.mafia;
 
-import roles.Bando;
-
 public class Padrino extends Mafioso {
 
     @Override
-    public Bando aparienciaParaDetective() {
+    public String nombre() {
+        return "Padrino";
+    }
 
-        return Bando.CIUDADANOS;
+    @Override
+    public boolean esSospechoso() {
+        return false;
+    }
+
+    @Override
+    public boolean tienePrioridadDeDesempate() {
+        return true;
     }
 }

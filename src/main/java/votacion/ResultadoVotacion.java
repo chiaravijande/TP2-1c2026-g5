@@ -1,17 +1,18 @@
 package votacion;
 
 import jugadores.Jugador;
-import partida.Partida;
+import java.util.Optional;
 
 public class ResultadoVotacion {
 
-    private Jugador expulsado;
+    private Optional<Jugador> expulsado;
 
-    public ResultadoVotacion(Jugador expulsado) {
+    // el constructor recibe el Optional ya establecido por la clase votacion
+    public ResultadoVotacion(Optional<Jugador> expulsado) {
         this.expulsado = expulsado;
     }
 
-    public void aplicar(Partida partida) {
-        expulsado.morir();
+    public Optional<Jugador> obtenerExpulsado() {
+        return this.expulsado;
     }
 }

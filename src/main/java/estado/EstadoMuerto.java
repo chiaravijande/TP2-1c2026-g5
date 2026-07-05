@@ -1,28 +1,55 @@
 package estado;
 
 import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import nocturno.RegistroNocturno;
+import partida.ContadorDeBandos;
+import partida.Partida;
 import votacion.Votacion;
+
+import java.util.List;
 
 public class EstadoMuerto extends EstadoJugador {
 
     @Override
-    public void realizarAccionNocturna(
+    public void ejecutarTurnoNocturno(
             Jugador jugador,
-            ContextoNocturno contexto,
-            Jugador objetivo
+            RegistroNocturno contexto
     ) {
-        // no hace nada
     }
 
     @Override
-    public void votarEn(Jugador jugador, Votacion votacion) {
-        // no vota
+    public void ejecutarTurnoDiurno(
+            Jugador jugador,
+            Partida partida
+    ) {
     }
 
     @Override
-    public void morir(Jugador jugador) {
-        // ya está muerto
+    public void votarEn(
+            Jugador jugador,
+            Votacion votacion
+    ) {
+    }
+
+    @Override
+    public void votarEnBallotage(
+            Jugador jugador,
+            Votacion votacion,
+            List<Jugador> candidatos
+    ) {
+    }
+
+    @Override
+    public void agruparseEn(
+            Jugador jugador,
+            ContadorDeBandos contador
+    ) {
+    }
+
+    @Override
+    public void eliminar(
+            Jugador jugador
+    ) {
     }
 
     @Override

@@ -1,37 +1,66 @@
 package estado;
 
 import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import nocturno.AccionNocturna;
+import nocturno.RegistroNocturno;
+import partida.ContadorDeBandos;
+import partida.Partida;
 import votacion.Votacion;
+
+import java.util.List;
+import java.util.Optional;
 
 public class EstadoVivo extends EstadoJugador {
 
     @Override
-    public void realizarAccionNocturna(
+    public void ejecutarTurnoNocturno(
             Jugador jugador,
-            ContextoNocturno contexto,
-            Jugador objetivo
+            RegistroNocturno contexto
     ) {
-        jugador.getRol().realizarAccion(
-                contexto,
-                jugador,
-                objetivo
-        );
+        jugador.prepararAccionNocturna()
+                .ifPresent(
+                        accion ->
+                                accion.ejecutar(contexto)
+                );
     }
 
     @Override
-    public void votarEn(Jugador jugador, Votacion votacion) {
-        Jugador votado = null;
-
-        votacion.registrarVoto(
-                jugador,
-                votado
-        );
+    public void ejecutarTurnoDiurno(
+            Jugador jugador,
+            Partida partida
+    ) {
     }
 
     @Override
-    public void morir(Jugador jugador) {
-        jugador.cambiarEstado(new EstadoMuerto());
+    public void votarEn(
+            Jugador jugador,
+            Votacion votacion
+    ) {
+    }
+
+    @Override
+    public void votarEnBallotage(
+            Jugador jugador,
+            Votacion votacion,
+            List<Jugador> candidatos
+    ) {
+    }
+
+    @Override
+    public void agruparseEn(
+            Jugador jugador,
+            ContadorDeBandos contador
+    ) {
+        jugador.agruparseSegunRol(contador);
+    }
+
+    @Override
+    public void eliminar(
+            Jugador jugador
+    ) {
+        jugador.cambiarEstado(
+                new EstadoMuerto()
+        );
     }
 
     @Override

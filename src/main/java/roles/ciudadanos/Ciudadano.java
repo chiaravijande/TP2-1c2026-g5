@@ -1,18 +1,22 @@
 package roles.ciudadanos;
 
-import jugadores.Jugador;
-import nocturno.ContextoNocturno;
+import partida.ContadorDeBandos;
 
-public class Ciudadano extends RolCiudadano {
+public class Ciudadano extends roles.RolCiudadano {
 
     @Override
-    public void realizarAccion(
-            ContextoNocturno contexto,
-            Jugador actor,
-            Jugador objetivo
-    ) {
+    public String nombre() {
+        return "Ciudadano";
+    }
 
-        // No tiene acción nocturna
+    @Override
+    public void agruparseEn(ContadorDeBandos contador) {
+        contador.contarCiudadano();
+    }
 
+    @Override
+    public boolean esSospechoso() {
+        // Un ciudadano común nunca es sospechoso para el Detective
+        return false;
     }
 }
