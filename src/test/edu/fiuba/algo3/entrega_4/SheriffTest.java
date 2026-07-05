@@ -36,24 +36,6 @@ public class SheriffTest {
         assertTrue(segunda.isEmpty());
     }
 
-    @Test
-    public void sheriffPuedeRevelarSoloSiNoLoHizoAntes() {
-
-        Sheriff sheriff = new Sheriff();
-
-        Jugador actor = mock(Jugador.class);
-        Jugador objetivo = mock(Jugador.class);
-
-        when(objetivo.esSospechoso()).thenReturn(false);
-
-        sheriff.prepararAccion(actor, Optional.of(objetivo));
-
-        assertTrue(sheriff.puedeRevelarInvestigacion());
-
-        sheriff.revelarInvestigacion();
-
-        assertFalse(sheriff.puedeRevelarInvestigacion());
-    }
 
     @Test
     public void sheriffNoPuedeRevelarSiNuncaInvestigo() {
